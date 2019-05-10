@@ -27,7 +27,7 @@ Copyright 2019 Teradata. All Rights Reserved.
 * [Null Values](#NullValues)
 * [Character Export Width](#CharacterExportWidth)
 * [Constructors](#Constructors)
-* [Driver Methods](#DriverGlobals)
+* [Driver Methods](#DriverMethods)
 * [Connection Methods](#ConnectionMethods)
 * [Result Methods](#ResultMethods)
 * [Escape Syntax](#EscapeSyntax)
