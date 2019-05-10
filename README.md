@@ -77,7 +77,7 @@ At the present time, the Teradata SQL Driver for R offers the following features
 
 The Teradata SQL Driver for R contains binary code and cannot be offered from [CRAN](https://cran.r-project.org/). The Teradata SQL Driver for R is available from Teradata's R package repository.
 
-The Teradata SQL Driver for R depends on the `bit64` and `DBI` packages which are available from CRAN.
+The Teradata SQL Driver for R depends on the `bit64`, `DBI`, and `hms` packages which are available from CRAN.
 
 To download and install dependencies automatically, specify the Teradata R package repository and CRAN in the `repos` argument for `install.packages`.
 
@@ -99,7 +99,7 @@ Use of the Teradata SQL Driver for R is governed by the *License Agreement for t
 
 The `README.md` file is a plain text file containing the documentation for the Teradata SQL Driver for R. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
 
-[Download documentation](archive/master.zip)
+[Download documentation](https://github.com/Teradata/r-driver/archive/master.zip)
 
 <a name="SamplePrograms"></a>
 
@@ -443,7 +443,7 @@ Creates and returns a `TimeWithTimeZone` value subclass of `POSIXlt`. The `$gmto
 
 * `HH:MM:SS+MM:SS` The time zone suffix specifies positive or negative offset from GMT
 * `HH:MM:SS-MM:SS`
-* `HH:MM:SS.SSSSSS+MM:SS` Optional 1 to 6 digits of fraction seconds
+* `HH:MM:SS.SSSSSS+MM:SS` Optional 1 to 6 digits of fractional seconds
 * `HH:MM:SS.SSSSSS-MM:SS`
 
 ---
@@ -453,7 +453,7 @@ Creates and returns a `TimeWithTimeZone` value subclass of `POSIXlt`. The `$gmto
 Creates and returns a `Timestamp` value subclass of `POSIXlt`. The *CharacterVector* must contain string values in the Teradata Database `TIMESTAMP` format.
 
 * `YYYY-MM-DD HH:MM:SS`
-* `YYYY-MM-DD HH:MM:SS.SSSSSS` Optional 1 to 6 digits of fraction seconds
+* `YYYY-MM-DD HH:MM:SS.SSSSSS` Optional 1 to 6 digits of fractional seconds
 
 ---
 
@@ -463,7 +463,7 @@ Creates and returns a `TimestampWithTimeZone` value subclass of `POSIXlt`. The `
 
 * `YYYY-MM-DD HH:MM:SS+MM:SS` The time zone suffix specifies positive or negative offset from GMT
 * `YYYY-MM-DD HH:MM:SS-MM:SS`
-* `YYYY-MM-DD HH:MM:SS.SSSSSS+MM:SS` Optional 1 to 6 digits of fraction seconds
+* `YYYY-MM-DD HH:MM:SS.SSSSSS+MM:SS` Optional 1 to 6 digits of fractional seconds
 * `YYYY-MM-DD HH:MM:SS.SSSSSS-MM:SS`
 
 <a name="DriverMethods"></a>
@@ -996,9 +996,9 @@ Connection Function                           | Returns
 
 #### Request-Scope Functions
 
-The following table lists request-scope function escape clauses that are intended for use with the Cursor `.execute` or `.executemany` methods.
+The following table lists request-scope function escape clauses that are intended for use with preparing or executing a SQL request.
 
-These functions control the behavior of the corresponding Cursor, and are limited in scope to the particular SQL request in which they are specified.
+These functions control the behavior of the prepare or execute operation, and are limited in scope to the particular SQL request in which they are specified.
 Request-scope function escape clauses are removed before the SQL request text is transmitted to the database.
 
 Request-Scope Function                                 | Effect
