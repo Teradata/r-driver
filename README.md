@@ -89,29 +89,38 @@ To download and install dependencies automatically, specify the Teradata R packa
 
 Use of the Teradata SQL Driver for R is governed by the *License Agreement for the Teradata SQL Driver for R*.
 
-* [LICENSE](LICENSE)
+When the Teradata SQL Driver for R is installed, the `LICENSE` and `THIRDPARTYLICENSE` files are placed in the `teradatasql` directory under your R library directory. The following command prints the location of the `teradatasql` directory.
 
-* [THIRDPARTYLICENSE](THIRDPARTYLICENSE)
+    Rscript -e "find.package('teradatasql')"
 
 <a name="Documentation"></a>
 
 ### Documentation
 
-The `README.md` file is a plain text file containing the documentation for the Teradata SQL Driver for R. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
+When the Teradata SQL Driver for R is installed, the `README.md` file is placed in the `teradatasql` directory under your R library directory. This permits you to view the documentation offline, when you are not connected to the Internet. The following command prints the location of the `teradatasql` directory.
 
-[Download documentation](https://github.com/Teradata/r-driver/archive/master.zip)
+    Rscript -e "find.package('teradatasql')"
+
+The `README.md` file is a plain text file containing the documentation for the Teradata SQL Driver for R. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
 
 <a name="SamplePrograms"></a>
 
 ### Sample Programs
 
-Sample programs are provided to demonstrate how to use the Teradata SQL Driver for R.
+Sample programs are provided to demonstrate how to use the Teradata SQL Driver for R. When the Teradata SQL Driver for R is installed, the sample programs are placed in the `teradatasql/samples` directory under your R library directory.
 
 The sample programs are coded with a fake Teradata Database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual Teradata Database hostname and credentials before running a sample program.
 
 Program                     | Purpose
 --------------------------- | ---
-tbd                         | tbd
+insertdate.R                | Demonstrates how to insert R Date values into a temporary table.
+insertdifftime.R            | Demonstrates how to insert R difftime values into a temporary table.
+inserthms.R                 | Demonstrates how to insert R hms values into a temporary table.
+insertinteger.R             | Demonstrates how to insert R integer values into a temporary table.
+insertposixct.R             | Demonstrates how to insert R POSIXct values into a temporary table.
+insertposixlt.R             | Demonstrates how to insert R POSIXlt values into a temporary table.
+insertraw.R                 | Demonstrates how to insert R raw values into a temporary table.
+inserttime.R                | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table.
 
 <a name="Using"></a>
 
@@ -1017,6 +1026,9 @@ Request-Scope Function                                 | Effect
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.18` - May 13, 2019
+* RDBI-52 dbWriteTable field.types column subset
 
 `16.20.0.17` - Apr 25, 2019
 * RDBI-51 immediate connection parameter
