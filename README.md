@@ -117,6 +117,7 @@ insertdate.R                | Demonstrates how to insert R Date values into a te
 insertdifftime.R            | Demonstrates how to insert R difftime values into a temporary table.
 inserthms.R                 | Demonstrates how to insert R hms values into a temporary table.
 insertinteger.R             | Demonstrates how to insert R integer values into a temporary table.
+insertnumeric.R             | Demonstrates how to insert R numeric values into a temporary table.
 insertposixct.R             | Demonstrates how to insert R POSIXct values into a temporary table.
 insertposixlt.R             | Demonstrates how to insert R POSIXlt values into a temporary table.
 insertraw.R                 | Demonstrates how to insert R raw values into a temporary table.
