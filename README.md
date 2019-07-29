@@ -23,6 +23,8 @@ Copyright 2019 Teradata. All Rights Reserved.
 * [Using the Teradata SQL Driver for R](#Using)
 * [Connection Parameters](#ConnectionParameters)
 * [Stored Password Protection](#StoredPasswordProtection)
+* [Transaction Mode](#TransactionMode)
+* [Auto-Commit](#AutoCommit)
 * [Data Types](#DataTypes)
 * [Null Values](#NullValues)
 * [Character Export Width](#CharacterExportWidth)
@@ -66,7 +68,7 @@ At the present time, the Teradata SQL Driver for R offers the following features
 * No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
-* Auto-commit for ANSI transaction mode is not offered yet. You must explicitly execute a `commit` command when using ANSI transaction mode.
+* Auto-commit for ANSI transaction mode is not offered yet. You must explicitly execute a `dbCommit` command when using ANSI transaction mode.
 * FastLoad is not available yet.
 * FastExport is not available yet.
 * Monitor partition support is not available yet.
@@ -113,6 +115,7 @@ The sample programs are coded with a fake Teradata Database hostname `whomooz`, 
 
 Program                     | Purpose
 --------------------------- | ---
+commitrollback.R            | Demonstrates dbBegin, dbCommit, and dbRollback methods.
 insertdate.R                | Demonstrates how to insert R Date values into a temporary table.
 insertdifftime.R            | Demonstrates how to insert R difftime values into a temporary table.
 inserthms.R                 | Demonstrates how to insert R hms values into a temporary table.
@@ -326,6 +329,81 @@ The Teradata SQL Driver for R verifies that the match values in the two files ar
 Before decryption, the Teradata SQL Driver for R calculates the MAC using the ciphertext, transformation name, and algorithm parameters if any, and verifies that the calculated MAC matches the expected MAC. The Teradata SQL Driver for R signals an error if the calculated MAC differs from the expected MAC, to indicate that either or both of the files may have been tampered with.
 
 Finally, the Teradata SQL Driver for R uses the decrypted password to log on to the Teradata Database.
+
+<a name="TransactionMode"></a>
+
+### Transaction Mode
+
+The `tmode` connection parameter enables an application to specify the transaction mode for the connection.
+* `"tmode":"ANSI"` provides American National Standards Institute (ANSI) transaction semantics. This mode is recommended.
+* `"tmode":"TERA"` provides legacy Teradata transaction semantics. This mode is only recommended for legacy applications that require Teradata transaction semantics.
+* `"tmode":"DEFAULT"` provides the default transaction mode configured for the Teradata Database, which may be either ANSI or TERA mode. `"tmode":"DEFAULT"` is the default when the `tmode` connection parameter is omitted.
+
+While ANSI mode is generally recommended, please note that every application is different, and some applications may need to use TERA mode. The following differences between ANSI and TERA mode might affect a typical user or application:
+1. Silent truncation of inserted data occurs in TERA mode, but not ANSI mode. In ANSI mode, the Teradata Database returns an error instead of truncating data.
+2. Tables created in ANSI mode are `MULTISET` by default. Tables created in TERA mode are `SET` tables by default.
+3. For tables created in ANSI mode, character columns are `CASESPECIFIC` by default. For tables created in TERA mode, character columns are `NOT CASESPECIFIC` by default.
+4. In ANSI mode, character literals are `CASESPECIFIC`. In TERA mode, character literals are `NOT CASESPECIFIC`.
+
+The last two behavior differences, taken together, may cause character data comparisons (such as in `WHERE` clause conditions) to be case-insensitive in TERA mode, but case-sensitive in ANSI mode. This, in turn, can produce different query results in ANSI mode versus TERA mode. Comparing two `NOT CASESPECIFIC` expressions is case-insensitive regardless of mode, and comparing a `CASESPECIFIC` expression to another expression of any kind is case-sensitive regardless of mode. You may explicitly `CAST` an expression to be `CASESPECIFIC` or `NOT CASESPECIFIC` to obtain the character data comparison required by your application.
+
+The Teradata Database Reference / *SQL Request and Transaction Processing* recommends that ANSI mode be used for all new applications. The primary benefit of using ANSI mode is that inadvertent data truncation is avoided. In contrast, when using TERA mode, silent data truncation can occur when data is inserted, because silent data truncation is a feature of TERA mode.
+
+A drawback of using ANSI mode is that you can only call stored procedures that were created using ANSI mode, and you cannot call stored procedures that were created using TERA mode. It may not be possible to switch over to ANSI mode exclusively, because you may have some legacy applications that require TERA mode to work properly. You can work around this drawback by creating your stored procedures twice, in two different users/databases, once using ANSI mode, and once using TERA mode.
+
+Refer to the Teradata Database Reference / *SQL Request and Transaction Processing* for complete information regarding the differences between ANSI and TERA transaction modes.
+
+<a name="AutoCommit"></a>
+
+### Auto-Commit
+
+The Teradata SQL Driver for R provides auto-commit on and off functionality for both ANSI and TERA mode.
+
+When a connection is first established, it begins with the default auto-commit setting, which is on. When auto-commit is on, the driver is solely responsible for managing transactions, and the driver commits each SQL request that is successfully executed. An application should not execute any transaction management SQL commands when auto-commit is on. An application should not call the `dbCommit` method or the `dbRollback` method when auto-commit is on.
+
+An application can manage transactions itself by calling the `dbBegin` method to turn off auto-commit.
+
+    DBI::dbBegin(con)
+
+When auto-commit is off, the driver leaves the current transaction open after each SQL request is executed, and the application is responsible for committing or rolling back the transaction by calling the `dbCommit` or the `dbRollback` method, respectively.
+
+Auto-commit remains turned off until the application calls `dbCommit` or  `dbRollback`. Auto-commit is turned back on when the application calls `dbCommit` or  `dbRollback`.
+
+Best practices recommend that an application avoid executing database-vendor-specific transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`, because those kind of commands differ from one vendor to another. (They even differ between Teradata's two modes ANSI and TERA.) Instead, best practices recommend that an application only call the standard methods `dbCommit` and `dbRollback` for transaction management.
+1. When auto-commit is on in ANSI mode, the driver automatically executes `COMMIT` after every successful SQL request.
+2. When auto-commit is off in ANSI mode, the driver does not automatically execute `COMMIT`. When the application calls the `dbCommit` method, then the driver executes `COMMIT`.
+3. When auto-commit is on in TERA mode, the driver does not execute `BT` or `ET`, unless the application explicitly executes `BT` or `ET` commands itself, which is not recommended.
+4. When auto-commit is off in TERA mode, the driver executes `BT` before submitting the application's first SQL request of a new transaction. When the application calls the `dbCommit` method, then the driver executes `ET` until the transaction is complete.
+
+As part of the wire protocol between the Teradata Database and Teradata client interface software (such as the Teradata SQL Driver for R), each message transmitted from the Teradata Database to the client has a bit designated to indicate whether the session has a transaction in progress or not. Thus, the client interface software is kept informed as to whether the session has a transaction in progress or not.
+
+In TERA mode with auto-commit off, when the application uses the driver to execute a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Subsequently, in TERA mode with auto-commit off, when the application uses the driver to execute another SQL request, and the session already has a transaction in progress, then the driver has no need to execute `BT` before executing the application's SQL request.
+
+In TERA mode, `BT` and `ET` pairs can be nested, and the Teradata Database keeps track of the nesting level. The outermost `BT`/`ET` pair defines the transaction scope; inner `BT`/`ET` pairs have no effect on the transaction because the Teradata Database does not provide actual transaction nesting. To commit the transaction, `ET` commands must be repeatedly executed until the nesting is unwound. The Teradata wire protocol bit (mentioned earlier) indicates when the nesting is unwound and the transaction is complete. When the application calls the `dbCommit` method in TERA mode, the driver repeatedly executes `ET` commands until the nesting is unwound and the transaction is complete.
+
+In rare cases, an application may not follow best practices and may explicitly execute transaction management commands. Such an application must turn off auto-commit before executing transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`. The application is responsible for executing the appropriate commands for the transaction mode in effect. TERA mode commands are `BT`, `ET`, and `ABORT`. ANSI mode commands are `COMMIT` and `ROLLBACK`. An application must take special care when opening a transaction in TERA mode with auto-commit off. In TERA mode with auto-commit off, when the application executes a SQL request, if the session does not have a transaction in progress, then the driver automatically executes `BT` before executing the application's SQL request. Therefore, the application should not begin a transaction by executing `BT`.
+
+    # TERA mode example showing undesirable BT/ET nesting
+    DBI::dbBegin(con)
+    DBI::dbExecute(con, "BT") # BT automatically executed by the driver before this, and produces a nested BT
+    DBI::dbExecute(con, "insert into mytable1 values(1, 2)")
+    DBI::dbExecute(con, "insert into mytable2 values(3, 4)")
+    DBI::dbExecute(con, "ET") # unwind nesting
+    DBI::dbExecute(con, "ET") # complete transaction
+
+    # TERA mode example showing how to avoid BT/ET nesting
+    DBI::dbBegin(con)
+    DBI::dbExecute(con, "insert into mytable1 values(1, 2)") # BT automatically executed by the driver before this
+    DBI::dbExecute(con, "insert into mytable2 values(3, 4)")
+    DBI::dbExecute(con, "ET") # complete transaction
+
+Please note that neither previous example shows best practices. Best practices recommend that an application only call the standard methods `dbCommit` and `dbRollback` for transaction management.
+
+    # Example showing best practice
+    DBI::dbBegin(con)
+    DBI::dbExecute(con, "insert into mytable1 values(1, 2)")
+    DBI::dbExecute(con, "insert into mytable2 values(3, 4)")
+    DBI::dbCommit(con)
 
 <a name="DataTypes"></a>
 
@@ -1027,6 +1105,10 @@ Request-Scope Function                                 | Effect
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.19` - Jul 29, 2019
+* GOSQL-18 Auto-commit
+* RDBI-58 dbBegin dbCommit dbRollback methods
 
 `16.20.0.18` - May 13, 2019
 * RDBI-52 dbWriteTable field.types column subset
