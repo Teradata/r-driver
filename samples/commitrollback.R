@@ -1,10 +1,6 @@
 # Copyright 2019 by Teradata Corporation. All Rights Reserved.
 
-# This sample program demonstrates how to insert R Date values into a temporary table using the DBI::dbWriteTable method.
-# This sample program demonstrates how to print the DDL of the table created by the DBI::dbWriteTable method.
-# This sample program demonstrates how to prepare a query of the table and print the result set column metadata without
-# executing the query.
-# This sample program demonstrates how to query the table using the DBI::dbReadTable method and print the result.
+# This sample program demonstrates how to use the dbBegin, dbCommit, and dbRollback methods.
 
 options (warning.length = 8000L)
 options (width = 1000)
