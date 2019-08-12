@@ -1144,6 +1144,9 @@ Request-Scope Function                                 | Effect
 
 ### Change Log
 
+`16.20.0.21` - Aug 12, 2019
+* GOSQL-38 timestamp prefix log messages
+
 `16.20.0.20` - Aug 7, 2019
 * GOSQL-4 Support COP discovery
 * RDBI-10 COP Discovery
