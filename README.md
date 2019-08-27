@@ -133,9 +133,21 @@ inserttime.R                | Demonstrates how to insert teradatasql TimeWithTim
 
 Your R script calls the `DBI::dbConnect` function to open a connection to the Teradata Database.
 
-Specify connection parameters as a JSON string:
+You may specify connection parameters as a JSON string, as named arguments, or using a combination of the two approaches. The `DBI::dbConnect` function's first argument is an instance of `teradatasql::TeradataDriver`. The `DBI::dbConnect` function's second argument is an optional JSON string. The `DBI::dbConnect` function's third and subsequent arguments are optional named arguments.
+
+Connection parameters specified only as named arguments:
+
+    con <- DBI::dbConnect(teradatasql::TeradataDriver(), host="whomooz", user="guest", password="please")
+
+Connection parameters specified only as a JSON string:
 
     con <- DBI::dbConnect(teradatasql::TeradataDriver(), '{"host":"whomooz","user":"guest","password":"please"}')
+
+Connection parameters specified using a combination:
+
+    con <- DBI::dbConnect(teradatasql::TeradataDriver(), '{"host":"whomooz"}', user="guest", password="please")
+
+When a combination of parameters are specified, connection parameters specified as named arguments take precedence over same-named connection parameters specified in the JSON string.
 
 <a name="ConnectionParameters"></a>
 
@@ -604,7 +616,11 @@ Returns `TRUE` or `FALSE` to indicate whether a connection to the database can b
 
 `DBI::dbConnect(teradatasql::TeradataDriver(),` *JSONConnectionString* `)`
 
-Creates a connection to the database and returns a Connection object. Specify connection parameters as a JSON string.
+Creates a connection to the database and returns a Connection object.
+
+The first parameter is an instance of `teradatasql::TeradataDriver`. The second parameter is an optional JSON string that defaults to `NA`. The third and subsequent arguments are optional named arguments. Specify connection parameters as a JSON string, as named arguments, or a combination of the two.
+
+When a combination of parameters are specified, connection parameters specified as named arguments take precedence over same-named connection parameters specified in the JSON string.
 
 ---
 
@@ -1143,6 +1159,10 @@ Request-Scope Function                                 | Effect
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.23` - Aug 27, 2019
+* GOSQL-40 Skip executing empty SQL request text
+* RDBI-59 dbConnect named arguments as connection parameters
 
 `16.20.0.22` - Aug 16, 2019
 * GOSQL-39 COP Discovery interop with Kerberos
