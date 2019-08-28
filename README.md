@@ -114,18 +114,18 @@ Sample programs are provided to demonstrate how to use the Teradata SQL Driver f
 
 The sample programs are coded with a fake Teradata Database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual Teradata Database hostname and credentials before running a sample program.
 
-Program                     | Purpose
---------------------------- | ---
-commitrollback.R            | Demonstrates dbBegin, dbCommit, and dbRollback methods.
-insertdate.R                | Demonstrates how to insert R Date values into a temporary table.
-insertdifftime.R            | Demonstrates how to insert R difftime values into a temporary table.
-inserthms.R                 | Demonstrates how to insert R hms values into a temporary table.
-insertinteger.R             | Demonstrates how to insert R integer values into a temporary table.
-insertnumeric.R             | Demonstrates how to insert R numeric values into a temporary table.
-insertposixct.R             | Demonstrates how to insert R POSIXct values into a temporary table.
-insertposixlt.R             | Demonstrates how to insert R POSIXlt values into a temporary table.
-insertraw.R                 | Demonstrates how to insert R raw values into a temporary table.
-inserttime.R                | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table.
+Program                                                                                        | Purpose
+---------------------------------------------------------------------------------------------- | ---
+[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)  | Demonstrates dbBegin, dbCommit, and dbRollback methods.
+[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)          | Demonstrates how to insert R Date values into a temporary table.
+[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)  | Demonstrates how to insert R difftime values into a temporary table.
+[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)            | Demonstrates how to insert R hms values into a temporary table.
+[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)    | Demonstrates how to insert R integer values into a temporary table.
+[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)    | Demonstrates how to insert R numeric values into a temporary table.
+[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)    | Demonstrates how to insert R POSIXct values into a temporary table.
+[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)    | Demonstrates how to insert R POSIXlt values into a temporary table.
+[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)            | Demonstrates how to insert R raw values into a temporary table.
+[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)          | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table.
 
 <a name="Using"></a>
 
@@ -244,7 +244,7 @@ We offer example programs in Java and Python to create encrypted password files 
 
 * You may use the [`TJEncryptPassword.java`](http://developer.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](http://developer.teradata.com/connectivity/reference/jdbc-driver).
 
-* You may use the `TJEncryptPassword.py` sample program that is available with the [Teradata SQL Driver for Python](https://pypi.org/project/teradatasql/).
+* You may use the [`TJEncryptPassword.py`](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py) sample program that is available with the Teradata SQL Driver for Python.
 
 These programs create the files containing the password encryption key and encrypted password, which can be subsequently specified via the `ENCRYPTED_PASSWORD(` syntax.
 
