@@ -34,6 +34,7 @@ Copyright 2019 Teradata. All Rights Reserved.
 * [Connection Methods](#ConnectionMethods)
 * [Result Methods](#ResultMethods)
 * [Escape Syntax](#EscapeSyntax)
+* [FastLoad](#FastLoad)
 * [Change Log](#ChangeLog)
 
 <a name="Features"></a>
@@ -116,16 +117,18 @@ The sample programs are coded with a fake Teradata Database hostname `whomooz`, 
 
 Program                                                                                        | Purpose
 ---------------------------------------------------------------------------------------------- | ---
-[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)  | Demonstrates dbBegin, dbCommit, and dbRollback methods.
-[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)          | Demonstrates how to insert R Date values into a temporary table.
-[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)  | Demonstrates how to insert R difftime values into a temporary table.
-[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)            | Demonstrates how to insert R hms values into a temporary table.
-[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)    | Demonstrates how to insert R integer values into a temporary table.
-[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)    | Demonstrates how to insert R numeric values into a temporary table.
-[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)    | Demonstrates how to insert R POSIXct values into a temporary table.
-[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)    | Demonstrates how to insert R POSIXlt values into a temporary table.
-[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)            | Demonstrates how to insert R raw values into a temporary table.
-[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)          | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table.
+[charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)        | Demonstrates the Teradata Database's _Character Export Width_ behavior
+[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)  | Demonstrates dbBegin, dbCommit, and dbRollback methods
+[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)          | Demonstrates how to insert R Date values into a temporary table
+[fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)    | Demonstrates how to FastLoad batches of rows
+[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)  | Demonstrates how to insert R difftime values into a temporary table
+[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)            | Demonstrates how to insert R hms values into a temporary table
+[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)    | Demonstrates how to insert R integer values into a temporary table
+[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)    | Demonstrates how to insert R numeric values into a temporary table
+[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)    | Demonstrates how to insert R POSIXct values into a temporary table
+[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)    | Demonstrates how to insert R POSIXlt values into a temporary table
+[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)            | Demonstrates how to insert R raw values into a temporary table
+[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)          | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
 
 <a name="Using"></a>
 
@@ -563,7 +566,7 @@ Or wrap query in a view with `CAST` or `TRIM` to avoid trailing space padding:
 
 `SELECT c1, c2 FROM MyView`
 
-This technique is also demonstrated in sample program `CharPadding.py`.
+This technique is also demonstrated in sample program `charpadding.R`.
 
 <a name="Constructors"></a>
 
@@ -970,7 +973,7 @@ Numeric Function                       | Returns
 `{fn PI()}`                            | The constant pi, approximately equal to 3.14159...
 `{fn POWER(`*number*`,`*integer*`)}`   | *number* raised to *integer* power
 `{fn RADIANS(`*number*`)}`             | Radians in *number* degrees
-`{fn RAND(`*seed*`)}`                  | A random float value such that 0 ≤ value < 1, and *seed* is ignored
+`{fn RAND(`*seed*`)}`                  | A random float value such that 0 &le; value < 1, and *seed* is ignored
 `{fn ROUND(`*number*`,`*places*`)}`    | *number* rounded to *places*
 `{fn SIGN(`*number*`)}`                | -1 if *number* is negative; 0 if *number* is 0; 1 if *number* is positive
 `{fn SIN(`*float*`)}`                  | Sine of *float* radians
@@ -1156,9 +1159,75 @@ Request-Scope Function                                 | Effect
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
 
+<a name="FastLoad"></a>
+
+### FastLoad
+
+The Teradata SQL Driver for R now offers FastLoad.
+
+Please be aware that this is just the initial release of the FastLoad feature. Think of it as a beta or preview version. It works, but does not yet offer all the features that JDBC FastLoad offers. FastLoad is still under active development, and we will continue to enhance it in subsequent builds.
+
+FastLoad has limitations and cannot be used in all cases as a substitute for SQL batch insert:
+* FastLoad can only load into an empty table.
+* FastLoad cannot load additional rows into a table that already contains rows.
+* FastLoad cannot load duplicate rows into a `MULTISET` table.
+* Do not use Fastload to load only a few rows, because FastLoad opens extra connections to the database, which is time consuming.
+* Only use FastLoad to load many rows (at least 100,000 rows) so that the row-loading performance gain exceeds the overhead of opening additional connections.
+* FastLoad does not support all Teradata Database data types. For example, `BLOB` and `CLOB` are not supported.
+* FastLoad requires StatementInfo parcel support to be enabled.
+* FastLoad locks the destination table.
+* If Online Archive encounters a table being loaded with FastLoad, online archiving of that table will be bypassed.
+
+Your application can bind a single row of data for FastLoad, but that is not recommended because the overhead of opening additional connections causes FastLoad to be slower than a regular SQL `INSERT` for a single row.
+
+How to use FastLoad:
+* Auto-commit should be turned off before beginning a FastLoad.
+* FastLoad is intended for binding many rows at a time. Each batch of rows must be able to fit into memory.
+* Your application can insert multiple batches in a loop for the same FastLoad, when auto-commit is turned off.
+* Each column's data type must be consistent across every row in every batch over the entire FastLoad.
+* The column values of the first row of the first batch dictate what the column data types must be in all subsequent rows and all subsequent batches of the FastLoad.
+* Each batch of rows must fit into a single request message that is transmitted to the database. FastLoad evenly distributes the batched rows across the available data transfer connections, and uses overlapped I/O to send and receive messages in parallel.
+
+If the batch is too large, the Teradata Database will return error 8013 "The LAN message MessageLength field is invalid". Assuming Teradata Database 16.0 and later with Large Messages enabled, the following table lists the maximum number of rows per batch for FastLoad:
+
+| Row size  | sessions=1 | sessions=2 | sessions=4 | sessions=8 |
+| ---------:| ----------:| ----------:| ----------:| ----------:|
+| 100 bytes |    160,000 |    320,000 |    640,000 |  1,280,000 |
+| 1 KB      |     16,000 |     32,000 |     64,000 |    128,000 |
+| 10 KB     |      1,600 |      3,200 |      6,400 |     12,800 |
+| 60 KB     |        266 |        532 |      1,064 |      2,128 |
+
+To use FastLoad, your application must prepend one of the following escape functions to the `INSERT` statement:
+* `{fn teradata_try_fastload}` tries to use FastLoad for the `INSERT` statement, and automatically executes the `INSERT` as a regular SQL statement when the `INSERT` is not compatible with FastLoad.
+* `{fn teradata_require_fastload}` requires FastLoad for the `INSERT` statement, and fails with an error when the `INSERT` is not compatible with FastLoad.
+
+Your application can prepend other optional escape functions to the `INSERT` statement:
+* `{fn teradata_sessions(`n`)}` specifies the number of data transfer connections to be opened, and is capped at the number of AMPs. The default is the smaller of 8 or the number of AMPs. `CHECK WORKLOAD` is not yet used, meaning that the driver does not ask the database how many data transfer connections should be used.
+* `{fn teradata_error_table_1_suffix(`suffix`)}` specifies what suffix to append to the name of FastLoad error table 1. The default suffix is `_ERR_1`.
+* `{fn teradata_error_table_2_suffix(`suffix`)}` specifies what suffix to append to the name of FastLoad error table 2. The default suffix is `_ERR_2`.
+* `{fn teradata_error_table_database(`dbname`)}` specifies the parent database name for FastLoad error tables 1 and 2. By default, the FastLoad error tables reside in the same database as the destination table.
+
+After beginning a FastLoad, your application can obtain the Logon Sequence Number (LSN) assigned to the FastLoad by prepending the following escape functions to the `INSERT` statement:
+* `{fn teradata_nativesql}{fn teradata_logon_sequence_number}` returns the string form of an integer representing the Logon Sequence Number (LSN) for the FastLoad. Returns an empty string if the request is not a FastLoad.
+
+FastLoad does not stop for data errors such as constraint violations or unique primary index violations. After inserting each batch of rows, your application must obtain warning and error information by prepending the following escape functions to the `INSERT` statement:
+* `{fn teradata_nativesql}{fn teradata_get_warnings}` returns in one string all warnings generated by FastLoad for the request.
+* `{fn teradata_nativesql}{fn teradata_get_errors}` returns in one string all data errors observed by FastLoad for the most recent batch. The data errors are obtained from FastLoad error table 1, for problems such as constraint violations, data type conversion errors, and unavailable AMP conditions.
+
+Your application ends FastLoad by committing or rolling back the current transaction. After commit or rollback, your application must obtain warning and error information by prepending the following escape functions to the `INSERT` statement:
+* `{fn teradata_nativesql}{fn teradata_get_warnings}` returns in one string all warnings generated by FastLoad for the commit or rollback. The warnings are obtained from FastLoad error table 2, for problems such as duplicate rows.
+* `{fn teradata_nativesql}{fn teradata_get_errors}` returns in one string all data errors observed by FastLoad for the commit or rollback. The data errors are obtained from FastLoad error table 2, for problems such as unique primary index violations.
+
+Warning and error information remains available until the next batch is inserted or until the commit or rollback. Each batch execution clears the prior warnings and errors. Each commit or rollback clears the prior warnings and errors.
+
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.24` - Sep 6, 2019
+* GOSQL-14 add support for FastLoad protocol
+* GOSQL-34 negative scale for Number values
+* RDBI-16 Data Transfer - FastLoad Protocol
 
 `16.20.0.23` - Aug 27, 2019
 * GOSQL-40 Skip executing empty SQL request text
