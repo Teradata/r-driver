@@ -6,7 +6,7 @@ This package implements the [DBI Specification](https://dbi.r-dbi.org/).
 
 This package requires 64-bit R 3.4.3 or later, and runs on Windows, macOS, and Linux. 32-bit R is not supported.
 
-For community support, please visit the [Connectivity Forum](http://community.teradata.com/t5/Connectivity/bd-p/DevXConnectivityBoard).
+For community support, please visit the [Teradata Community forums](https://community.teradata.com/).
 
 For Teradata customer support, please visit [Teradata Access](https://access.teradata.com/).
 
@@ -1223,6 +1223,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.26` - Oct 16, 2019
+* GOSQL-46 LDAP password special characters
 
 `16.20.0.25` - Oct 3, 2019
 * GOSQL-45 FastLoad interop with Stored Password Protection
