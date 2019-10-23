@@ -1224,6 +1224,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`16.20.0.27` - Oct 23, 2019
+* RDBI-61 improve performance for batch bind values
+
 `16.20.0.26` - Oct 16, 2019
 * GOSQL-46 LDAP password special characters
 
