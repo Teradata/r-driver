@@ -10,6 +10,8 @@ For community support, please visit the [Teradata Community forums](https://comm
 
 For Teradata customer support, please visit [Teradata Access](https://access.teradata.com/).
 
+Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
+
 Copyright 2019 Teradata. All Rights Reserved.
 
 ### Table of Contents
@@ -96,6 +98,8 @@ When the Teradata SQL Driver for R is installed, the `LICENSE` and `THIRDPARTYLI
 
     Rscript -e "find.package('teradatasql')"
 
+In addition to the license terms, the driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to the licensing terms, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
+
 <a name="Documentation"></a>
 
 ### Documentation
@@ -157,7 +161,7 @@ When a combination of parameters are specified, connection parameters specified 
 
 The following table lists the connection parameters currently offered by the Teradata SQL Driver for R.
 
-Our goal is consistency for the connection parameters offered by the Teradata SQL Driver for R and the Teradata JDBC Driver, with respect to connection parameter names and functionality. For comparison, Teradata JDBC Driver connection parameters are [documented here](http://developer.teradata.com/doc/connectivity/jdbc/reference/current/jdbcug_chapter_2.html#BGBHDDGB).
+Our goal is consistency for the connection parameters offered by the Teradata SQL Driver for R and the Teradata JDBC Driver, with respect to connection parameter names and functionality. For comparison, Teradata JDBC Driver connection parameters are [documented here](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/jdbcug_chapter_2.html#BGBHDDGB).
 
 Parameter          | Default     | Type           | Description
 ------------------ | ----------- | -------------- | ---
@@ -244,7 +248,7 @@ Stored Password Protection is offered by the Teradata JDBC Driver, the Teradata 
 
 We offer example programs in Java and Python to create encrypted password files for use with Stored Password Protection.
 
-* You may use the [`TJEncryptPassword.java`](http://developer.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](http://developer.teradata.com/connectivity/reference/jdbc-driver).
+* You may use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html).
 
 * You may use the [`TJEncryptPassword.py`](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py) sample program that is available with the Teradata SQL Driver for Python.
 
@@ -1183,19 +1187,11 @@ Your application can bind a single row of data for FastLoad, but that is not rec
 How to use FastLoad:
 * Auto-commit should be turned off before beginning a FastLoad.
 * FastLoad is intended for binding many rows at a time. Each batch of rows must be able to fit into memory.
-* Your application can insert multiple batches in a loop for the same FastLoad, when auto-commit is turned off.
+* When auto-commit is turned off, your application can insert multiple batches in a loop for the same FastLoad.
 * Each column's data type must be consistent across every row in every batch over the entire FastLoad.
 * The column values of the first row of the first batch dictate what the column data types must be in all subsequent rows and all subsequent batches of the FastLoad.
-* Each batch of rows must fit into a single request message that is transmitted to the database. FastLoad evenly distributes the batched rows across the available data transfer connections, and uses overlapped I/O to send and receive messages in parallel.
 
-If the batch is too large, the Teradata Database will return error 8013 "The LAN message MessageLength field is invalid". Assuming Teradata Database 16.0 and later with Large Messages enabled, the following table lists the maximum number of rows per batch for FastLoad:
-
-| Row size  | sessions=1 | sessions=2 | sessions=4 | sessions=8 |
-| ---------:| ----------:| ----------:| ----------:| ----------:|
-| 100 bytes |    160,000 |    320,000 |    640,000 |  1,280,000 |
-| 1 KB      |     16,000 |     32,000 |     64,000 |    128,000 |
-| 10 KB     |      1,600 |      3,200 |      6,400 |     12,800 |
-| 60 KB     |        266 |        532 |      1,064 |      2,128 |
+FastLoad opens multiple data transfer connections to the database. FastLoad evenly distributes each batch of rows across the available data transfer connections, and uses overlapped I/O to send and receive messages in parallel.
 
 To use FastLoad, your application must prepend one of the following escape functions to the `INSERT` statement:
 * `{fn teradata_try_fastload}` tries to use FastLoad for the `INSERT` statement, and automatically executes the `INSERT` as a regular SQL statement when the `INSERT` is not compatible with FastLoad.
@@ -1223,6 +1219,10 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.28` - Nov 15, 2019
+* GOSQL-36 segment and iterate parameter batches per batch row limit
+* GOSQL-43 segment and iterate parameter batches per request message size limit for FastLoad
 
 `16.20.0.27` - Oct 23, 2019
 * RDBI-61 improve performance for batch bind values
