@@ -751,7 +751,13 @@ Returns a `character` vector containing the column names of the table with *name
 
 `DBI::dbListObjects(` *conn* `, prefix = NULL)`
 
-Not implemented yet.
+Returns a `data.frame` containing column 1 `table` with data type `list` of `DBI::Id`, and column 2 `is_prefix` with data type `logical`.
+
+Returns the list of databases in the system when `prefix` is `NULL`. Column 2 `is_prefix` will be all `TRUE` in this case.
+
+Returns the list of tables in the specified database when `prefix` is a string or a `DBI:Id` with a `schema` component. Column 2 `is_prefix` will be all `FALSE` in this case.
+
+Only returns information about databases, permanent tables, and views. Does not return any information about volatile tables or global temporary tables.
 
 ---
 
@@ -1219,6 +1225,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.29` - Nov 19, 2019
+* RDBI-53 Implement method dbListObjects
 
 `16.20.0.28` - Nov 15, 2019
 * GOSQL-36 segment and iterate parameter batches per batch row limit
