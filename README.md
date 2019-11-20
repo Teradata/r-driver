@@ -118,20 +118,24 @@ Sample programs are provided to demonstrate how to use the Teradata SQL Driver f
 
 The sample programs are coded with a fake Teradata Database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual Teradata Database hostname and credentials before running a sample program.
 
-Program                                                                                        | Purpose
----------------------------------------------------------------------------------------------- | ---
-[charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)        | Demonstrates the Teradata Database's _Character Export Width_ behavior
-[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)  | Demonstrates dbBegin, dbCommit, and dbRollback methods
-[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)          | Demonstrates how to insert R Date values into a temporary table
-[fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)    | Demonstrates how to FastLoad batches of rows
-[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)  | Demonstrates how to insert R difftime values into a temporary table
-[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)            | Demonstrates how to insert R hms values into a temporary table
-[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)    | Demonstrates how to insert R integer values into a temporary table
-[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)    | Demonstrates how to insert R numeric values into a temporary table
-[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)    | Demonstrates how to insert R POSIXct values into a temporary table
-[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)    | Demonstrates how to insert R POSIXlt values into a temporary table
-[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)            | Demonstrates how to insert R raw values into a temporary table
-[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)          | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
+Program                                                                                             | Purpose
+--------------------------------------------------------------------------------------------------- | ---
+[charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)             | Demonstrates the Teradata Database's _Character Export Width_ behavior
+[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)       | Demonstrates dbBegin, dbCommit, and dbRollback methods
+[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)               | Demonstrates how to insert R Date values into a temporary table
+[fakeresultsetcon.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetcon.R)   | Demonstrates connection parameter for fake result sets
+[fakeresultsetesc.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetesc.R)   | Demonstrates escape function for fake result sets
+[fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)         | Demonstrates how to FastLoad batches of rows
+[fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                   | Demonstrates fetching results from a multi-statement request
+[fetchsp.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchsp.R)                     | Demonstrates fetching results from a stored procedure
+[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)       | Demonstrates how to insert R difftime values into a temporary table
+[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)                 | Demonstrates how to insert R hms values into a temporary table
+[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)         | Demonstrates how to insert R integer values into a temporary table
+[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)         | Demonstrates how to insert R numeric values into a temporary table
+[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)         | Demonstrates how to insert R POSIXct values into a temporary table
+[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)         | Demonstrates how to insert R POSIXlt values into a temporary table
+[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)                 | Demonstrates how to insert R raw values into a temporary table
+[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)               | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
 
 <a name="Using"></a>
 
@@ -1225,6 +1229,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.30` - Nov 20, 2019
+* RDBI-54 Implement method dbNextResult
 
 `16.20.0.29` - Nov 19, 2019
 * RDBI-53 Implement method dbListObjects
