@@ -944,6 +944,15 @@ Returns `FALSE`.
 Returns `TRUE` to indicate that the result is usable.
 Returns `FALSE` otherwise.
 
+---
+
+`teradatasql::dbNextResult(` *res* `)`
+
+Advances to the next result returned by a multi-statement request.
+
+Returns `TRUE` to indicate that the next result is available.
+Returns `FALSE` otherwise.
+
 <a name="EscapeSyntax"></a>
 
 ### Escape Syntax
@@ -1229,6 +1238,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.31` - Nov 21, 2019
+* GOSQL-49 FastLoad support for additional connection parameters
 
 `16.20.0.30` - Nov 20, 2019
 * RDBI-54 Implement method dbNextResult
