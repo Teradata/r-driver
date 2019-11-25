@@ -136,6 +136,7 @@ Program                                                                         
 [insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)         | Demonstrates how to insert R POSIXlt values into a temporary table
 [insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)                 | Demonstrates how to insert R raw values into a temporary table
 [inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)               | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
+[TJEncryptPassword.R](https://github.com/Teradata/r-driver/blob/master/samples/TJEncryptPassword.R) | Creates encrypted password files
 
 <a name="Using"></a>
 
@@ -250,15 +251,40 @@ Stored Password Protection is offered by the Teradata JDBC Driver, the Teradata 
 
 #### Program TJEncryptPassword
 
-We offer example programs in Java and Python to create encrypted password files for use with Stored Password Protection.
+`TJEncryptPassword.R` is a sample program to create encrypted password files for use with Stored Password Protection. When the Teradata SQL Driver for R is installed, the sample programs are placed in the `teradatasql/samples` directory under your R library directory.
 
-* You may use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html).
+This program works in conjunction with Stored Password Protection offered by the Teradata JDBC Driver, the Teradata SQL Driver for Python, and the Teradata SQL Driver for R. This program creates the files containing the password encryption key and encrypted password, which can be subsequently specified via the `ENCRYPTED_PASSWORD(` syntax.
 
-* You may use the [`TJEncryptPassword.py`](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py) sample program that is available with the Teradata SQL Driver for Python.
+You are not required to use this program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files. You may use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html). You may also use the [`TJEncryptPassword.py`](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py) sample program that is available with the Teradata SQL Driver for Python. The only requirement is that the files must match the format expected by the Teradata SQL Driver for R, which is documented below.
 
-These programs create the files containing the password encryption key and encrypted password, which can be subsequently specified via the `ENCRYPTED_PASSWORD(` syntax.
+This program encrypts the password and then immediately decrypts the password, in order to verify that the password can be successfully decrypted. This program mimics the password decryption of the Teradata SQL Driver for R, and is intended to openly illustrate its operation and enable scrutiny by the community.
 
-You are not required to use these programs to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files. The only requirement is that the files must match the format expected by the Teradata SQL Driver for R, which is documented below.
+The encrypted password is only as safe as the two files. You are responsible for restricting access to the files containing the password encryption key and encrypted password. If an attacker obtains both files, the password can be decrypted. The operating system file permissions for the two files should be as limited and restrictive as possible, to ensure that only the intended operating system userid has access to the files.
+
+The two files can be kept on separate physical volumes, to reduce the risk that both files might be lost at the same time. If either or both of the files are located on a network volume, then an encrypted wire protocol can be used to access the network volume, such as sshfs, encrypted NFSv4, or encrypted SMB 3.0.
+
+This program accepts eight command-line arguments:
+
+Argument                      | Example              | Description
+----------------------------- | -------------------- | ---
+Transformation                | `AES/CBC/NoPadding`  | Specifies the transformation in the form *Algorithm*`/`*Mode*`/`*Padding*. Supported transformations are listed in a table below.
+KeySizeInBits                 | `256`                | Specifies the algorithm key size, which governs the encryption strength.
+MAC                           | `HmacSHA256`         | Specifies the message authentication code (MAC) algorithm `HmacSHA1` or `HmacSHA256`.
+PasswordEncryptionKeyFileName | `PassKey.properties` | Specifies a filename in the current directory, a relative pathname, or an absolute pathname. The file is created by this program. If the file already exists, it will be overwritten by the new file.
+EncryptedPasswordFileName     | `EncPass.properties` | Specifies a filename in the current directory, a relative pathname, or an absolute pathname. The filename or pathname that must differ from the PasswordEncryptionKeyFileName. The file is created by this program. If the file already exists, it will be overwritten by the new file.
+Hostname                      | `whomooz`            | Specifies the Teradata Database hostname.
+Username                      | `guest`              | Specifies the Teradata Database username.
+Password                      | `please`             | Specifies the Teradata Database password to be encrypted. Unicode characters in the password can be specified with the `\u`*XXXX* escape sequence.
+
+#### Example Command
+
+The TJEncryptPassword program uses the Teradata SQL Driver for R to log on to the specified Teradata Database using the encrypted password, so the Teradata SQL Driver for R must already be installed.
+
+The following command assume that the `TJEncryptPassword.R` program file is located in the current directory. When the Teradata SQL Driver for R is installed, the sample programs are placed in the `teradatasql/samples` directory under your R library directory. Change your current directory to the `teradatasql/samples` directory under your R library directory.
+
+The following example command illustrates using a 256-bit AES key, and using the HmacSHA256 algorithm.
+
+    Rscript TJEncryptPassword.R AES/CBC/NoPadding 256 HmacSHA256 PassKey.properties EncPass.properties whomooz guest please
 
 #### Password Encryption Key File Format
 
@@ -299,39 +325,40 @@ While `params` is technically optional, an initialization vector is required by 
 A transformation is a string that describes the set of operations to be performed on the given input, to produce transformed output. A transformation specifies the name of a cryptographic algorithm such as DES or AES, followed by a feedback mode and padding scheme.
 
 The Teradata SQL Driver for R supports the following transformations and key sizes.
+However, `TJEncryptPassword.R` only supports AES with CBC or CFB, as indicated below.
 
-Transformation              | Key Size
---------------------------- | ---
-`DES/CBC/NoPadding`         | 64
-`DES/CBC/PKCS5Padding`      | 64
-`DES/CFB/NoPadding`         | 64
-`DES/CFB/PKCS5Padding`      | 64
-`DES/OFB/NoPadding`         | 64
-`DES/OFB/PKCS5Padding`      | 64
-`DESede/CBC/NoPadding`      | 192
-`DESede/CBC/PKCS5Padding`   | 192
-`DESede/CFB/NoPadding`      | 192
-`DESede/CFB/PKCS5Padding`   | 192
-`DESede/OFB/NoPadding`      | 192
-`DESede/OFB/PKCS5Padding`   | 192
-`AES/CBC/NoPadding`         | 128
-`AES/CBC/NoPadding`         | 192
-`AES/CBC/NoPadding`         | 256
-`AES/CBC/PKCS5Padding`      | 128
-`AES/CBC/PKCS5Padding`      | 192
-`AES/CBC/PKCS5Padding`      | 256
-`AES/CFB/NoPadding`         | 128
-`AES/CFB/NoPadding`         | 192
-`AES/CFB/NoPadding`         | 256
-`AES/CFB/PKCS5Padding`      | 128
-`AES/CFB/PKCS5Padding`      | 192
-`AES/CFB/PKCS5Padding`      | 256
-`AES/OFB/NoPadding`         | 128
-`AES/OFB/NoPadding`         | 192
-`AES/OFB/NoPadding`         | 256
-`AES/OFB/PKCS5Padding`      | 128
-`AES/OFB/PKCS5Padding`      | 192
-`AES/OFB/PKCS5Padding`      | 256
+Transformation              | Key Size | TJEncryptPassword.R
+--------------------------- | -------- | ---
+`DES/CBC/NoPadding`         | 64       |
+`DES/CBC/PKCS5Padding`      | 64       |
+`DES/CFB/NoPadding`         | 64       |
+`DES/CFB/PKCS5Padding`      | 64       |
+`DES/OFB/NoPadding`         | 64       |
+`DES/OFB/PKCS5Padding`      | 64       |
+`DESede/CBC/NoPadding`      | 192      |
+`DESede/CBC/PKCS5Padding`   | 192      |
+`DESede/CFB/NoPadding`      | 192      |
+`DESede/CFB/PKCS5Padding`   | 192      |
+`DESede/OFB/NoPadding`      | 192      |
+`DESede/OFB/PKCS5Padding`   | 192      |
+`AES/CBC/NoPadding`         | 128      | Yes
+`AES/CBC/NoPadding`         | 192      | Yes
+`AES/CBC/NoPadding`         | 256      | Yes
+`AES/CBC/PKCS5Padding`      | 128      | Yes
+`AES/CBC/PKCS5Padding`      | 192      | Yes
+`AES/CBC/PKCS5Padding`      | 256      | Yes
+`AES/CFB/NoPadding`         | 128      | Yes
+`AES/CFB/NoPadding`         | 192      | Yes
+`AES/CFB/NoPadding`         | 256      | Yes
+`AES/CFB/PKCS5Padding`      | 128      | Yes
+`AES/CFB/PKCS5Padding`      | 192      | Yes
+`AES/CFB/PKCS5Padding`      | 256      | Yes
+`AES/OFB/NoPadding`         | 128      |
+`AES/OFB/NoPadding`         | 192      |
+`AES/OFB/NoPadding`         | 256      |
+`AES/OFB/PKCS5Padding`      | 128      |
+`AES/OFB/PKCS5Padding`      | 192      |
+`AES/OFB/PKCS5Padding`      | 256      |
 
 Stored Password Protection uses a symmetric encryption algorithm such as DES or AES, in which the same secret key is used for encryption and decryption of the password. Stored Password Protection does not use an asymmetric encryption algorithm such as RSA, with separate public and private keys.
 
@@ -1238,6 +1265,9 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.32` - Nov 25, 2019
+* RDBI-9 TJEncryptPassword.R sample program
 
 `16.20.0.31` - Nov 21, 2019
 * GOSQL-49 FastLoad support for additional connection parameters
