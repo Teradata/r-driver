@@ -1277,6 +1277,7 @@ Warning and error information remains available until the next batch is inserted
 * GOSQL-49 FastLoad support for additional connection parameters
 
 `16.20.0.30` - Nov 20, 2019
+* GOSQL-33 CALL to stored procedure INOUT and OUT parameter output values
 * RDBI-54 Implement method dbNextResult
 
 `16.20.0.29` - Nov 19, 2019
