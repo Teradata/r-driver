@@ -457,7 +457,7 @@ When auto-commit is off, the driver leaves the current transaction open after ea
 
 Auto-commit remains turned off until the application calls `dbCommit` or  `dbRollback`. Auto-commit is turned back on when the application calls `dbCommit` or  `dbRollback`.
 
-Best practices recommend that an application avoid executing database-vendor-specific transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`, because those kind of commands differ from one vendor to another. (They even differ between Teradata's two modes ANSI and TERA.) Instead, best practices recommend that an application only call the standard methods `dbCommit` and `dbRollback` for transaction management.
+Best practices recommend that an application avoid executing database-vendor-specific transaction management commands such as `BT`, `ET`, `ABORT`, `COMMIT`, or `ROLLBACK`, because such commands differ from one vendor to another. (They even differ between Teradata's two modes ANSI and TERA.) Instead, best practices recommend that an application only call the standard methods `dbCommit` and `dbRollback` for transaction management.
 1. When auto-commit is on in ANSI mode, the driver automatically executes `COMMIT` after every successful SQL request.
 2. When auto-commit is off in ANSI mode, the driver does not automatically execute `COMMIT`. When the application calls the `dbCommit` method, then the driver executes `COMMIT`.
 3. When auto-commit is on in TERA mode, the driver does not execute `BT` or `ET`, unless the application explicitly executes `BT` or `ET` commands itself, which is not recommended.
@@ -1266,6 +1266,10 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.34` - Dec 10, 2019
+* GOSQL-50 provide FastLoad duplicate row errors with auto-commit on
+* RDBI-62 allow NA in bound list of raw values
 
 `16.20.0.33` - Nov 26, 2019
 * GOSQL-15 add database connection parameter
