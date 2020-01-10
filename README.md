@@ -82,7 +82,7 @@ At the present time, the Teradata SQL Driver for R offers the following features
 
 The Teradata SQL Driver for R contains binary code and cannot be offered from [CRAN](https://cran.r-project.org/). The Teradata SQL Driver for R is available from Teradata's R package repository.
 
-The Teradata SQL Driver for R depends on the `bit64`, `DBI`, and `hms` packages which are available from CRAN.
+The Teradata SQL Driver for R depends on the `bit64`, `DBI`, `digest`, and `hms` packages which are available from CRAN.
 
 To download and install dependencies automatically, specify the Teradata R package repository and CRAN in the `repos` argument for `install.packages`.
 
