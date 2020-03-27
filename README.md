@@ -69,7 +69,7 @@ At the present time, the Teradata SQL Driver for R offers the following features
 ### Limitations
 
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
-* The following complex data types are not supported yet: `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
+* The following complex data types are not supported yet: `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
@@ -136,6 +136,7 @@ Program                                                                         
 [insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)         | Demonstrates how to insert R POSIXlt values into a temporary table
 [insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)                 | Demonstrates how to insert R raw values into a temporary table
 [inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)               | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
+[insertxml.R](https://github.com/Teradata/r-driver/blob/master/samples/insertxml.R)                 | Demonstrates how to insert and retrieve XML values
 [TJEncryptPassword.R](https://github.com/Teradata/r-driver/blob/master/samples/TJEncryptPassword.R) | Creates encrypted password files
 
 <a name="Using"></a>
@@ -537,6 +538,7 @@ Teradata Database data type        | Result set R data type | With `posixlt` as 
 `TIMESTAMP WITH TIME ZONE`         | `character`            | `teradatasql::TimestampWithTimeZone` | `character`
 `VARBYTE`                          | `raw`                  |                                      |
 `VARCHAR`                          | `character`            |                                      |
+`XML`                              | `character`            |                                      |
 
 The table below lists the parameterized SQL bind-value R data types supported by the Teradata SQL Driver for R, and indicates the corresponding Teradata Database data type transmitted to the server.
 
@@ -1201,6 +1203,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_failfast}`                               | Reject ("fail fast") this SQL request rather than delay by a workload management rule or throttle
 `{fn teradata_fake_result_sets}`                       | A fake result set containing statement metadata precedes each real result set
 `{fn teradata_lobselect(`*Option*`)}`                  | Executes the SQL request with LOB select *Option* `S` (spool-scoped LOB locators), `T` (transaction-scoped LOB locators), or the default `I` (inline materialized LOB values)
+`{fn teradata_parameter(`*Index*`,`*DataType*`)`       | Transmits parameter *Index* bind values as *DataType*
 `{fn teradata_posixlt_off}`                            | Does not use `POSIXlt` subclasses for result set column value types.
 `{fn teradata_posixlt_on}`                             | Uses `POSIXlt` subclasses for certain result set column value types.
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request
@@ -1266,6 +1269,12 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`16.20.0.36` - Mar 27, 2020
+* GOSQL-22 enable insert of large LOB values over 64KB
+* GOSQL-52 teradata_try_fastload consider bind value data types
+* GOSQL-54 enforce Decimal value maximum precision 38
+* RDBI-56 Teradata data types up to TD 14.10
 
 `16.20.0.35` - Jan 8, 2020
 * GOSQL-51 FastLoad fails when table is dropped and recreated
