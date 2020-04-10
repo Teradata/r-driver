@@ -1412,4 +1412,3 @@ Warning and error information remains available until the next batch is inserted
 * RDBI-4 R Language Version
 * RDBI-6 Teradata Vantage version support
 * RDBI-8 Data Security
-
