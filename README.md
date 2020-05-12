@@ -1270,6 +1270,10 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`16.20.0.38` - May 12, 2020
+* GOSQL-58 support multiple files for Elicit File protocol
+* GOSQL-59 FastLoad accommodate dbscontrol change of COUNT(*) return type
+
 `16.20.0.37` - Apr 30, 2020
 * GOSQL-57 Deferred LOB values larger than 1MB
 
