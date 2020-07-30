@@ -127,6 +127,7 @@ Program                                                                         
 [fakeresultsetesc.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetesc.R)   | Demonstrates escape function for fake result sets
 [fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)         | Demonstrates how to FastLoad batches of rows
 [fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                   | Demonstrates fetching results from a multi-statement request
+[fetchperftest.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchperftest.R)         | Measures time to fetch rows from a large result set
 [fetchsp.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchsp.R)                     | Demonstrates fetching results from a stored procedure
 [insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)       | Demonstrates how to insert R difftime values into a temporary table
 [inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)                 | Demonstrates how to insert R hms values into a temporary table
@@ -1270,6 +1271,10 @@ Warning and error information remains available until the next batch is inserted
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.0.0.3` - July 30, 2020
+* Build DLL and shared library with Go 1.14.6
+* Sample program `fetchperftest.R`
 
 `17.0.0.2` - June 10, 2020
 * GOSQL-60 CLOBTranslate=Locked workaround for DBS DR 194293
