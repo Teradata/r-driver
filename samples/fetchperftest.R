@@ -2,6 +2,7 @@
 
 # This sample program demonstrates how to fetch a large result set containing many rows.
 
+options (warn = 2) # convert warnings to errors
 options (warning.length = 8000L)
 options (width = 1000)
 

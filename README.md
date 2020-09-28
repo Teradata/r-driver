@@ -1272,6 +1272,9 @@ Warning and error information remains available until the next batch is inserted
 
 ### Change Log
 
+`17.0.0.6` - September 28, 2020
+* RDBI-70 change hms::as.hms to hms::as_hms
+
 `17.0.0.5` - August 26, 2020
 * GOSQL-64 improve error checking for FastLoad escape functions
 

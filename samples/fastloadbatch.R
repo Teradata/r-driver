@@ -1,7 +1,8 @@
-# Copyright 2019 by Teradata Corporation. All Rights Reserved.
+# Copyright 2020 by Teradata Corporation. All Rights Reserved.
 
 # This sample program demonstrates how to FastLoad batches of rows.
 
+options (warn = 2) # convert warnings to errors
 options (warning.length = 8000L)
 options (width = 1000)
 

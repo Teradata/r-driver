@@ -3,6 +3,7 @@
 # This sample program demonstrates how to insert and retrieve XML values.
 # Use the escape function teradata_parameter to override the data type for a parameter marker bind value.
 
+options (warn = 2) # convert warnings to errors
 options (warning.length = 8000L)
 options (width = 1000)
 

@@ -1,4 +1,4 @@
-# Copyright 2019 by Teradata Corporation. All Rights Reserved.
+# Copyright 2020 by Teradata Corporation. All Rights Reserved.
 
 # This sample program demonstrates how to insert R hms values into a temporary table using the DBI::dbWriteTable method.
 # This sample program demonstrates how to print the DDL of the table created by the DBI::dbWriteTable method.
@@ -15,7 +15,7 @@ main <- function () {
 
   tryCatch ({
 
-    df <- data.frame (c1 = hms::as.hms (c (
+    df <- data.frame (c1 = hms::as_hms (c (
       '12:34:56',
       '12:34:56.1',
       '12:34:56.12',

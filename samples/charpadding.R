@@ -1,4 +1,4 @@
-# Copyright 2019 by Teradata Corporation. All rights reserved.
+# Copyright 2020 by Teradata Corporation. All rights reserved.
 
 # This sample program demonstrates how to work with the Teradata Database's Character Export Width behavior.
 
@@ -9,6 +9,7 @@
 # Work around this drawback by using CAST or TRIM in SQL SELECT statements, or in views, to convert fixed-width CHAR
 # data types to VARCHAR.
 
+options (warn = 2) # convert warnings to errors
 options (warning.length = 8000L)
 options (width = 1000)
 

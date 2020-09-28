@@ -1,4 +1,4 @@
-# Copyright 2019 by Teradata Corporation. All Rights Reserved.
+# Copyright 2020 by Teradata Corporation. All Rights Reserved.
 #
 #   File:       TJEncryptPassword.R
 #   Purpose:    Encrypts a password, saves the encryption key in one file, and saves the encrypted password in a second file
@@ -297,6 +297,10 @@
 #               Example with absolute paths on Linux:
 #
 #                   ENCRYPTED_PASSWORD(file:/dir1/JohnDoeKey.properties,file:/dir2/JohnDoePass.properties)
+
+options (warn = 2) # convert warnings to errors
+options (warning.length = 8000L)
+options (width = 1000)
 
 j2r <- function (sName) { # convert Java names to R names
 

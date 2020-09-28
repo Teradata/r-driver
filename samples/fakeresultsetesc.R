@@ -1,7 +1,8 @@
-# Copyright 2019 by Teradata Corporation. All rights reserved.
+# Copyright 2020 by Teradata Corporation. All rights reserved.
 
 # This sample program demonstrates the behavior of the fake_result_sets escape function.
 
+options (warn = 2) # convert warnings to errors
 options (warning.length = 8000L)
 options (width = 1000)
 

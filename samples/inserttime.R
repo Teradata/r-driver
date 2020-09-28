@@ -1,4 +1,4 @@
-# Copyright 2019 by Teradata Corporation. All Rights Reserved.
+# Copyright 2020 by Teradata Corporation. All Rights Reserved.
 
 # This sample program demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone
 # values into a temporary table using the DBI::dbWriteTable method.
@@ -7,6 +7,7 @@
 # executing the query.
 # This sample program demonstrates how to query the table using the DBI::dbReadTable method and print the result.
 
+options (warn = 2) # convert warnings to errors
 options (warning.length = 8000L)
 options (width = 1000)
 
