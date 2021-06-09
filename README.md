@@ -1302,6 +1302,9 @@ After beginning a FastExport, your application can obtain the Logon Sequence Num
 
 ### Change Log
 
+`17.10.0.0` - June 8, 2021
+* GOSQL-75 trim whitespace from SQL request text
+
 `17.0.0.8` - December 18, 2020
 * GOSQL-13 add support for FastExport protocol
 
