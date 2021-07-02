@@ -38,6 +38,7 @@ Copyright 2021 Teradata. All Rights Reserved.
 * [Escape Syntax](#EscapeSyntax)
 * [FastLoad](#FastLoad)
 * [FastExport](#FastExport)
+* [CSV Batch Inserts](#CSVBatchInserts)
 * [Change Log](#ChangeLog)
 
 <a name="Features"></a>
@@ -61,6 +62,7 @@ At the present time, the Teradata SQL Driver for R offers the following features
 * Most JDBC escape syntax.
 * Parameterized SQL requests with question-mark parameter markers.
 * Parameterized batch SQL requests with multiple rows of data bound to question-mark parameter markers.
+* Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * ElicitFile protocol support for DDL commands that create external UDFs or stored procedures and upload a file from client to database.
 * `CREATE PROCEDURE` and `REPLACE PROCEDURE` commands.
 * Stored Procedure Dynamic Result Sets.
@@ -71,7 +73,6 @@ At the present time, the Teradata SQL Driver for R offers the following features
 ### Limitations
 
 * The UTF8 session character set is always used. The `charset` connection parameter is not supported.
-* The following complex data types are not supported yet: `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * No support yet for data encryption that is governed by central administration. To enable data encryption, you must specify a `true` value for the `encryptdata` connection parameter.
 * Laddered Concurrent Connect is not supported yet.
 * No support yet for Recoverable Network Protocol and Redrive.
@@ -121,6 +122,7 @@ The sample programs are coded with a fake Teradata Database hostname `whomooz`, 
 
 Program                                                                                             | Purpose
 --------------------------------------------------------------------------------------------------- | ---
+[batchinsertcsv.py](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertcsv.R)      | Demonstrates how to insert a batch of rows from a CSV file
 [charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)             | Demonstrates the Teradata Database's _Character Export Width_ behavior
 [commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)       | Demonstrates dbBegin, dbCommit, and dbRollback methods
 [insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)               | Demonstrates how to insert R Date values into a temporary table
@@ -128,6 +130,7 @@ Program                                                                         
 [fakeresultsetesc.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetesc.R)   | Demonstrates escape function for fake result sets
 [fastexporttable.R](https://github.com/Teradata/r-driver/blob/master/samples/fastexporttable.R)     | Demonstrates how to FastExport rows from a table
 [fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)         | Demonstrates how to FastLoad batches of rows
+[fastloadcsv.py](https://github.com/Teradata/r-driver/blob/master/samples/fastloadcsv.R)            | Demonstrates how to FastLoad batches of rows from a CSV file
 [fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                   | Demonstrates fetching results from a multi-statement request
 [fetchperftest.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchperftest.R)         | Measures time to fetch rows from a large result set
 [fetchsp.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchsp.R)                     | Demonstrates fetching results from a stored procedure
@@ -182,6 +185,8 @@ Parameter          | Default     | Type           | Description
 `dbs_port`         | `"1025"`    | quoted integer | Specifies the Teradata Database port number. Equivalent to the Teradata JDBC Driver `DBS_PORT` connection parameter.
 `encryptdata`      | `"false"`   | quoted boolean | Controls encryption of data exchanged between the Teradata Database and the Teradata SQL Driver for R. Equivalent to the Teradata JDBC Driver `ENCRYPTDATA` connection parameter.
 `fake_result_sets` | `"false"`   | quoted boolean | Controls whether a fake result set containing statement metadata precedes each real result set.
+`field_quote`      | `"\""`      | string         | Specifies a single character string used to quote fields in a CSV file.
+`field_sep`        | `","`       | string         | Specifies a single character string used to separate fields in a CSV file.
 `host`             |             | string         | Specifies the Teradata Database hostname.
 `immediate`        | `"true"`    | quoted boolean | Controls whether `DBI::dbSendQuery` and `DBI::dbSendStatement` execute the SQL request when the `params` and `immediate` arguments are omitted.
 `lob_support`      | `"true"`    | quoted boolean | Controls LOB support. Equivalent to the Teradata JDBC Driver `LOB_SUPPORT` connection parameter.
@@ -1213,6 +1218,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_provide(request_scope_lob_support_off)}` | Turns off LOB support for this SQL request
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request
+`{fn teradata_read_csv(`*CSVFileName*`)}`              | Executes a batch insert using the bind parameter values read from the specified CSV file for either a SQL batch insert or a FastLoad
 `{fn teradata_rpo(`*RequestProcessingOption*`)}`       | Executes the SQL request with *RequestProcessingOption* `S` (prepare), `E` (execute), or the default `B` (both)
 `{fn teradata_untrusted}`                              | Marks the SQL request as untrusted; not implemented yet
 
@@ -1270,6 +1276,8 @@ Your application ends FastLoad by committing or rolling back the current transac
 
 Warning and error information remains available until the next batch is inserted or until the commit or rollback. Each batch execution clears the prior warnings and errors. Each commit or rollback clears the prior warnings and errors.
 
+<a name="FastExport"></a>
+
 ### FastExport
 
 The Teradata SQL Driver for R now offers FastExport.
@@ -1298,9 +1306,46 @@ Your application can prepend other optional escape functions to the query:
 After beginning a FastExport, your application can obtain the Logon Sequence Number (LSN) assigned to the FastExport by prepending the following escape functions to the query:
 * `{fn teradata_nativesql}{fn teradata_logon_sequence_number}` returns the string form of an integer representing the Logon Sequence Number (LSN) for the FastExport. Returns an empty string if the request is not a FastExport.
 
+<a name="CSVBatchInserts"></a>
+
+### CSV Batch Inserts
+
+The Teradata SQL Driver for R can read batch insert bind values from a CSV (comma separated values) file. This feature can be used with SQL batch inserts and with FastLoad.
+
+To specify batch insert bind values in a CSV file, the application prepends the escape function `{fn teradata_read_csv(`*CSVFileName*`)}` to the `INSERT` statement.
+
+The application can specify batch insert bind values in a CSV file, or specify bind parameter values, but not both together. The driver returns an error if both are specified together.
+
+Considerations when using a CSV file:
+* Each record is on a separate line of the CSV file. Records are delimited by line breaks (CRLF). The last record in the file may or may not have an ending line break.
+* The first line of the CSV file is a header line. The header line lists the column names separated by the field separator (e.g. `col1,col2,col3`).
+* The field separator defaults to the comma character (`,`). You can specify a different field separator character with the `field_sep` connection parameter. The specified field separator character must match the actual separator character used in the CSV file.
+* Each field can optionally be enclosed by the field quote character, which defaults to the double-quote character (e.g. `"abc",123,efg`). Specify the `field_quote` connection parameter to override the default field quote character. The field quote character must match the actual field quote character used in the CSV file.
+* The connection parameters `field_sep` and `field_quote` cannot be set to the same value. The field separator and field quote characters must be legal UTF-8 characters and cannot be line feed (`\n`) or carriage return (`\r`).
+* Field quote characters are only permitted in fields enclosed by field quote characters. Field quote characters must not appear inside unquoted fields (e.g. not allowed `ab"cd"ef,1,abc`).
+* To include a field quote character in a quoted field, the field quote character must be repeated (e.g. `"abc""efg""dh",123,xyz`).
+* Line breaks, field quote characters, and field separators may be included in a quoted field (e.g. `"abc,efg\ndh",123,xyz`).
+* Specify a `NULL` value in the CSV file with an empty value between commas (e.g. `1,,456`).
+* A zero-length quoted string specifies a zero-length non-`NULL` string, not a `NULL` value (e.g. `1,"",456`).
+* Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported.
+* A field length greater than 64KB is trasnmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. A field length greater than 64KB is not supported with FastLoad.
+
+Limitations when using CSV batch inserts:
+* Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_csv(`*CSVFileName*`)}`.
+* The CSV file must contain at least one valid record in addition to the header line containing the column names.
+* For FastLoad, the insert operation will fail if the CSV file is improperly formatted and a parser error occurs.
+* For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned. Each parser error will include the line number (starting at line 1) and the column number (starting at zero).
+* Using a CSV file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
+
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.1` - July 2, 2021
+* GOSQL-35 Statement Independence
+* GOSQL-72 Read CSV files
+* RDBI-57 JSON, CSV, and Avro data type support
+* RDBI-75 Preserve the integer64 values when the first integer64 column value returned is NULL
 
 `17.10.0.0` - June 8, 2021
 * GOSQL-75 trim whitespace from SQL request text
