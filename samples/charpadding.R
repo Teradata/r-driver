@@ -27,7 +27,7 @@ main <- function () {
       print (DBI::dbGetQuery (con, "SELECT c1, c2 FROM MyTable"), right = FALSE)
 
       cat ("Modified query with either CAST or TRIM to avoid trailing space padding:\n")
-      print (DBI::dbGetQuery (con, "SELECT CAST(c1 AS VARCHAR(10)), TRIM(TRAILING FROM c1) FROM MyTable"), right = FALSE)
+      print (DBI::dbGetQuery (con, "SELECT CAST(c1 AS VARCHAR(10)), TRIM(TRAILING FROM c2) FROM MyTable"), right = FALSE)
 
       DBI::dbExecute (con, "CREATE VIEW MyView (c1, c2) AS SELECT CAST(c1 AS VARCHAR(10)), TRIM(TRAILING FROM c2) FROM MyTable")
       tryCatch ({
