@@ -12,48 +12,48 @@ options (width = 1000)
 
 main <- function () {
 
-  con <- DBI::dbConnect (teradatasql::TeradataDriver (), '{"host":"whomooz","user":"guest","password":"please"}')
+	con <- DBI::dbConnect (teradatasql::TeradataDriver (), '{"host":"whomooz","user":"guest","password":"please"}')
 
-  tryCatch ({
+	tryCatch ({
 
-    df <- data.frame (
-      c1 = c (123L, NA),
-      c2 = c (12345L, NA),
-      c3 = c (1234567890L, NA),
-      c4 = bit64::as.integer64 (c ("1234567890123", NA))
-    )
+		df <- data.frame (
+			c1 = c (123L, NA),
+			c2 = c (12345L, NA),
+			c3 = c (1234567890L, NA),
+			c4 = bit64::as.integer64 (c ("1234567890123", NA))
+		)
 
-    sTableName <- "voltab"
+		sTableName <- "voltab"
 
-    # override default destination column data types for the first two columns
-    DBI::dbWriteTable (con, sTableName, df, field.types = c ("byteint", "smallint"), temporary = TRUE)
+		# override default destination column data types for the first two columns
+		DBI::dbWriteTable (con, sTableName, df, field.types = c ("byteint", "smallint"), temporary = TRUE)
 
-    df <- DBI::dbGetQuery (con, paste0 ("show table ", sTableName))
-    cat (gsub ("\r", "\n", df [1, 1]), "\n\n")
+		df <- DBI::dbGetQuery (con, paste0 ("show table ", sTableName))
+		cat (gsub ("\r", "\n", df [1, 1]), "\n\n")
 
-    # specify immediate = FALSE to prepare but not execute
-    res <- DBI::dbSendQuery (con, paste0 ("select * from ", sTableName), immediate = FALSE)
-    tryCatch ({
-      print (DBI::dbColumnInfo (res), right = FALSE) # obtain result set column metadata from prepared statement
-    }, finally = {
-      DBI::dbClearResult (res)
-    })
+		# specify immediate = FALSE to prepare but not execute
+		res <- DBI::dbSendQuery (con, paste0 ("select * from ", sTableName), immediate = FALSE)
+		tryCatch ({
+			print (DBI::dbColumnInfo (res), right = FALSE) # obtain result set column metadata from prepared statement
+		}, finally = {
+			DBI::dbClearResult (res)
+		})
 
-    cat ("\n")
-    print (DBI::dbReadTable (con, sTableName), right = FALSE)
+		cat ("\n")
+		print (DBI::dbReadTable (con, sTableName), right = FALSE)
 
-    invisible (TRUE)
+		invisible (TRUE)
 
-  }, finally = {
+	}, finally = {
 
-    DBI::dbDisconnect (con)
+		DBI::dbDisconnect (con)
 
-  }) # end finally
+	}) # end finally
 
 } # end main
 
 withCallingHandlers (main (), error = function (e) {
-  listStackFrames <- head (tail (sys.calls (), -1), -2) # omit first one and last two
-  nStackFrameCount <- length (listStackFrames)
-  cat (paste0 ("[", 1 : nStackFrameCount, "/", nStackFrameCount, "] ", listStackFrames, "\n\n", collapse = ""))
+	listStackFrames <- head (tail (sys.calls (), -1), -2) # omit first one and last two
+	nStackFrameCount <- length (listStackFrames)
+	cat (paste0 ("[", 1 : nStackFrameCount, "/", nStackFrameCount, "] ", listStackFrames, "\n\n", collapse = ""))
 })

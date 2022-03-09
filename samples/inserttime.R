@@ -13,52 +13,52 @@ options (width = 1000)
 
 main <- function () {
 
-  con <- DBI::dbConnect (teradatasql::TeradataDriver (), '{"host":"whomooz","user":"guest","password":"please"}')
+	con <- DBI::dbConnect (teradatasql::TeradataDriver (), '{"host":"whomooz","user":"guest","password":"please"}')
 
-  tryCatch ({
+	tryCatch ({
 
-    df <- data.frame (
-      c1 = c ("12:34:56-03:30", "12:34:56.123456+05:45", NA),
-      c2 = c ("2000-10-11 12:34:56", "2000-10-11 12:34:56.123456", NA),
-      c3 = c ("2000-10-11 12:34:56-03:30", "2000-10-11 12:34:56.123456+05:45", NA),
-      stringsAsFactors = FALSE) # constructors below require a character vector not factors
+		df <- data.frame (
+			c1 = c ("12:34:56-03:30", "12:34:56.123456+05:45", NA),
+			c2 = c ("2000-10-11 12:34:56", "2000-10-11 12:34:56.123456", NA),
+			c3 = c ("2000-10-11 12:34:56-03:30", "2000-10-11 12:34:56.123456+05:45", NA),
+			stringsAsFactors = FALSE) # constructors below require a character vector not factors
 
-    # The data.frame constructor mishandles POSIXlt vectors, so the POSIXlt vectors must be stored after construction.
-    df$c1 <- teradatasql::TimeWithTimeZone (df$c1)
-    df$c2 <- teradatasql::Timestamp (df$c2)
-    df$c3 <- teradatasql::TimestampWithTimeZone (df$c3)
+		# The data.frame constructor mishandles POSIXlt vectors, so the POSIXlt vectors must be stored after construction.
+		df$c1 <- teradatasql::TimeWithTimeZone (df$c1)
+		df$c2 <- teradatasql::Timestamp (df$c2)
+		df$c3 <- teradatasql::TimestampWithTimeZone (df$c3)
 
-    sTableName <- "voltab"
-    DBI::dbWriteTable (con, sTableName, df, temporary = TRUE)
+		sTableName <- "voltab"
+		DBI::dbWriteTable (con, sTableName, df, temporary = TRUE)
 
-    df <- DBI::dbGetQuery (con, paste0 ("show table ", sTableName))
-    cat (gsub ("\r", "\n", df [1, 1]), "\n\n")
+		df <- DBI::dbGetQuery (con, paste0 ("show table ", sTableName))
+		cat (gsub ("\r", "\n", df [1, 1]), "\n\n")
 
-    sQuery <- paste0 ("{fn teradata_posixlt_on}select * from ", sTableName)
+		sQuery <- paste0 ("{fn teradata_posixlt_on}select * from ", sTableName)
 
-    # specify immediate = FALSE to prepare but not execute
-    res <- DBI::dbSendQuery (con, sQuery, immediate = FALSE)
-    tryCatch ({
-      print (DBI::dbColumnInfo (res), right = FALSE) # obtain result set column metadata from prepared statement
-    }, finally = {
-      DBI::dbClearResult (res)
-    })
+		# specify immediate = FALSE to prepare but not execute
+		res <- DBI::dbSendQuery (con, sQuery, immediate = FALSE)
+		tryCatch ({
+			print (DBI::dbColumnInfo (res), right = FALSE) # obtain result set column metadata from prepared statement
+		}, finally = {
+			DBI::dbClearResult (res)
+		})
 
-    cat ("\n")
-    print (DBI::dbGetQuery (con, sQuery), right = FALSE)
+		cat ("\n")
+		print (DBI::dbGetQuery (con, sQuery), right = FALSE)
 
-    invisible (TRUE)
+		invisible (TRUE)
 
-  }, finally = {
+	}, finally = {
 
-    DBI::dbDisconnect (con)
+		DBI::dbDisconnect (con)
 
-  }) # end finally
+	}) # end finally
 
 } # end main
 
 withCallingHandlers (main (), error = function (e) {
-  listStackFrames <- head (tail (sys.calls (), -1), -2) # omit first one and last two
-  nStackFrameCount <- length (listStackFrames)
-  cat (paste0 ("[", 1 : nStackFrameCount, "/", nStackFrameCount, "] ", listStackFrames, "\n\n", collapse = ""))
+	listStackFrames <- head (tail (sys.calls (), -1), -2) # omit first one and last two
+	nStackFrameCount <- length (listStackFrames)
+	cat (paste0 ("[", 1 : nStackFrameCount, "/", nStackFrameCount, "] ", listStackFrames, "\n\n", collapse = ""))
 })

@@ -304,294 +304,294 @@ options (width = 1000)
 
 j2r <- function (sName) { # convert Java names to R names
 
-  if (startsWith (sName, "Hmac")) {
-    return (tolower (substr (sName, 5, nchar (sName))))
-  }
+	if (startsWith (sName, "Hmac")) {
+		return (tolower (substr (sName, 5, nchar (sName))))
+	}
 
-  return (sName)
+	return (sName)
 
 } # end j2r
 
 createPasswordEncryptionKeyFile <- function (sTransformation, sAlgorithm, sMode, sPadding, nKeySizeInBits, sMatch, sMac, sPassKeyFileName) {
 
-  nKeySizeInBytes <- nKeySizeInBits %/% 8
+	nKeySizeInBytes <- nKeySizeInBits %/% 8
 
-  abyKey <- teradatasql::getRandomBytes (teradatasql::TeradataDriver (), nKeySizeInBytes)
-  sKeyHexDigits <- paste0 (abyKey, collapse = "")
+	abyKey <- teradatasql::getRandomBytes (teradatasql::TeradataDriver (), nKeySizeInBytes)
+	sKeyHexDigits <- paste0 (abyKey, collapse = "")
 
-  nMacBlockSizeInBytes <- 64 # SHA block size is 64 bytes
+	nMacBlockSizeInBytes <- 64 # SHA block size is 64 bytes
 
-  abyMacKey <- teradatasql::getRandomBytes (teradatasql::TeradataDriver (), nMacBlockSizeInBytes)
-  sMacKeyHexDigits <- paste0 (abyMacKey, collapse = "")
+	abyMacKey <- teradatasql::getRandomBytes (teradatasql::TeradataDriver (), nMacBlockSizeInBytes)
+	sMacKeyHexDigits <- paste0 (abyMacKey, collapse = "")
 
-  cat (paste0 (
-    "# Teradata SQL Driver password encryption key file\n",
-    "version=1\n",
-    "transformation=", sTransformation, "\n",
-    "algorithm=", sAlgorithm, "\n",
-    "match=", sMatch, "\n",
-    "key=", sKeyHexDigits, "\n",
-    "mac=", sMac, "\n",
-    "mackey=", sMacKeyHexDigits, "\n"),
-    file = sPassKeyFileName)
+	cat (paste0 (
+		"# Teradata SQL Driver password encryption key file\n",
+		"version=1\n",
+		"transformation=", sTransformation, "\n",
+		"algorithm=", sAlgorithm, "\n",
+		"match=", sMatch, "\n",
+		"key=", sKeyHexDigits, "\n",
+		"mac=", sMac, "\n",
+		"mackey=", sMacKeyHexDigits, "\n"),
+		file = sPassKeyFileName)
 
-  return (list ("abyKey" = abyKey, "abyMacKey" = abyMacKey))
+	return (list ("abyKey" = abyKey, "abyMacKey" = abyMacKey))
 
 } # end createPasswordEncryptionKeyFile
 
 createEncryptedPasswordFile <- function (sTransformation, sAlgorithm, sMode, sPadding, sMatch, abyKey, sMac, abyMacKey, sEncPassFileName, sPassword) {
 
-  bPadding <- sPadding == "PKCS5Padding"
+	bPadding <- sPadding == "PKCS5Padding"
 
-  nBlockSizeInBytes <- 16 # AES block size is 16 bytes
-  abyIV <- teradatasql::getRandomBytes (teradatasql::TeradataDriver (), nBlockSizeInBytes)
+	nBlockSizeInBytes <- 16 # AES block size is 16 bytes
+	abyIV <- teradatasql::getRandomBytes (teradatasql::TeradataDriver (), nBlockSizeInBytes)
 
-  abyASN1EncodedIV <- asn1Encode (abyIV)
-  sASN1EncodedIVHexDigits <- paste0 (abyASN1EncodedIV, collapse = "")
+	abyASN1EncodedIV <- asn1Encode (abyIV)
+	sASN1EncodedIVHexDigits <- paste0 (abyASN1EncodedIV, collapse = "")
 
-  cipher <- digest::AES (abyKey, mode = sMode, IV = abyIV)
+	cipher <- digest::AES (abyKey, mode = sMode, IV = abyIV)
 
-  abyPassword <- charToRaw (sPassword)
+	abyPassword <- charToRaw (sPassword)
 
-  nPlaintextByteCount <- (length (abyPassword) %/% 512 + 1) * 512 # zero-pad the password to the next 512-byte boundary
+	nPlaintextByteCount <- (length (abyPassword) %/% 512 + 1) * 512 # zero-pad the password to the next 512-byte boundary
 
-  nTrailerByteCount <- nPlaintextByteCount - length (abyPassword)
-  abyPassword <- c (abyPassword, raw (nTrailerByteCount))
+	nTrailerByteCount <- nPlaintextByteCount - length (abyPassword)
+	abyPassword <- c (abyPassword, raw (nTrailerByteCount))
 
-  if (bPadding) {
-    abyPassword <- addPKCS5Padding (abyPassword, nBlockSizeInBytes)
-  }
+	if (bPadding) {
+		abyPassword <- addPKCS5Padding (abyPassword, nBlockSizeInBytes)
+	}
 
-  abyEncryptedPassword <- cipher$encrypt (abyPassword)
-  sEncryptedPasswordHexDigits <- paste (abyEncryptedPassword, collapse="")
+	abyEncryptedPassword <- cipher$encrypt (abyPassword)
+	sEncryptedPasswordHexDigits <- paste (abyEncryptedPassword, collapse="")
 
-  abyContent <- c (abyEncryptedPassword, charToRaw (sTransformation), abyASN1EncodedIV)
+	abyContent <- c (abyEncryptedPassword, charToRaw (sTransformation), abyASN1EncodedIV)
 
-  sHashHexDigits <- digest::hmac (abyMacKey, abyContent, algo = j2r (sMac))
+	sHashHexDigits <- digest::hmac (abyMacKey, abyContent, algo = j2r (sMac))
 
-  cat (paste0 (
-    "# Teradata SQL Driver encrypted password file\n",
-    "version=1\n",
-    "match=", sMatch, "\n",
-    "password=", sEncryptedPasswordHexDigits, "\n",
-    "params=", sASN1EncodedIVHexDigits, "\n",
-    "hash=", sHashHexDigits, "\n"),
-    file = sEncPassFileName)
+	cat (paste0 (
+		"# Teradata SQL Driver encrypted password file\n",
+		"version=1\n",
+		"match=", sMatch, "\n",
+		"password=", sEncryptedPasswordHexDigits, "\n",
+		"params=", sASN1EncodedIVHexDigits, "\n",
+		"hash=", sHashHexDigits, "\n"),
+		file = sEncPassFileName)
 
 } # end createEncryptedPasswordFile
 
 loadPropertiesFile <- function (sFileName) {
 
-  asLines <- readLines (sFileName, encoding = "iso-8859-1")
-  asLines <- trimws (asLines)
-  asLines <- asLines [! startsWith (asLines, "#")]
-  mapOutput <- list ()
+	asLines <- readLines (sFileName, encoding = "iso-8859-1")
+	asLines <- trimws (asLines)
+	asLines <- asLines [! startsWith (asLines, "#")]
+	mapOutput <- list ()
 
-  for (nLine in seq_along (asLines)) {
+	for (nLine in seq_along (asLines)) {
 
-      asTokens <- unlist (strsplit (asLines [[nLine]], "="))
-      sKey <- trimws (asTokens [[1]])
-      sValue <- ifelse (length (asTokens) == 2, trimws (asTokens [[2]]), "")
-      mapOutput [[sKey]] <- sValue
+			asTokens <- unlist (strsplit (asLines [[nLine]], "="))
+			sKey <- trimws (asTokens [[1]])
+			sValue <- ifelse (length (asTokens) == 2, trimws (asTokens [[2]]), "")
+			mapOutput [[sKey]] <- sValue
 
-  } # end for
+	} # end for
 
-  return (mapOutput)
+	return (mapOutput)
 
 } # end loadPropertiesFile
 
 decryptPassword <- function (sPassKeyFileName, sEncPassFileName) {
 
-  mapPassKey <- loadPropertiesFile (sPassKeyFileName)
-  mapEncPass <- loadPropertiesFile (sEncPassFileName)
+	mapPassKey <- loadPropertiesFile (sPassKeyFileName)
+	mapEncPass <- loadPropertiesFile (sEncPassFileName)
 
-  if (mapPassKey$version != 1) {
-    stop (paste0 ("Unrecognized version ", mapPassKey$version, " in file ", sPassKeyFileName))
-  }
+	if (mapPassKey$version != 1) {
+		stop (paste0 ("Unrecognized version ", mapPassKey$version, " in file ", sPassKeyFileName))
+	}
 
-  if (mapEncPass$version != 1) {
-    stop (paste0 ("Unrecognized version ", mapEncPass$version , " in file ", sEncPassFileName))
-  }
+	if (mapEncPass$version != 1) {
+		stop (paste0 ("Unrecognized version ", mapEncPass$version , " in file ", sEncPassFileName))
+	}
 
-  if (mapPassKey$match != mapEncPass$match) {
-    stop (paste0 ("Match value differs between files ", sPassKeyFileName, " and ", sEncPassFileName))
-  }
+	if (mapPassKey$match != mapEncPass$match) {
+		stop (paste0 ("Match value differs between files ", sPassKeyFileName, " and ", sEncPassFileName))
+	}
 
-  sTransformation  <- mapPassKey$transformation
-  sAlgorithm       <- mapPassKey$algorithm
-  sKeyHexDigits    <- mapPassKey$key
-  sMACAlgorithm    <- mapPassKey$mac
-  sMacKeyHexDigits <- mapPassKey$mackey
+	sTransformation  <- mapPassKey$transformation
+	sAlgorithm       <- mapPassKey$algorithm
+	sKeyHexDigits    <- mapPassKey$key
+	sMACAlgorithm    <- mapPassKey$mac
+	sMacKeyHexDigits <- mapPassKey$mackey
 
-  asTransformationParts <- unlist (strsplit (sTransformation, "/"))
+	asTransformationParts <- unlist (strsplit (sTransformation, "/"))
 
-  sMode      <- asTransformationParts [[2]]
-  sPadding   <- asTransformationParts [[3]]
+	sMode      <- asTransformationParts [[2]]
+	sPadding   <- asTransformationParts [[3]]
 
-  if (sAlgorithm != asTransformationParts [[1]]) {
-    stop (paste0 ("Algorithm differs from transformation in file ", sPassKeyFileName))
-  }
+	if (sAlgorithm != asTransformationParts [[1]]) {
+		stop (paste0 ("Algorithm differs from transformation in file ", sPassKeyFileName))
+	}
 
-  bPadding <- sPadding == "PKCS5Padding"
+	bPadding <- sPadding == "PKCS5Padding"
 
-  # While params is technically optional, an initialization vector is required by all three block
-    # cipher modes CBC, CFB, and OFB that are supported by the Teradata SQL Driver for R.
-  # ECB does not require params, but ECB is not supported by the Teradata SQL Driver for R.
+	# While params is technically optional, an initialization vector is required by all three block
+		# cipher modes CBC, CFB, and OFB that are supported by the Teradata SQL Driver for R.
+	# ECB does not require params, but ECB is not supported by the Teradata SQL Driver for R.
 
-  sEncryptedPasswordHexDigits <- mapEncPass$password
-  sASN1EncodedIVHexDigits     <- mapEncPass$params # required for CBC, CFB, and OFB
-  sHashHexDigits              <- mapEncPass$hash
+	sEncryptedPasswordHexDigits <- mapEncPass$password
+	sASN1EncodedIVHexDigits     <- mapEncPass$params # required for CBC, CFB, and OFB
+	sHashHexDigits              <- mapEncPass$hash
 
-  abyKey               <- hexDigitsToRaw (sKeyHexDigits)
-  abyMacKey            <- hexDigitsToRaw (sMacKeyHexDigits)
-  abyEncryptedPassword <- hexDigitsToRaw (sEncryptedPasswordHexDigits)
-  abyASN1EncodedIV     <- hexDigitsToRaw (sASN1EncodedIVHexDigits)
+	abyKey               <- hexDigitsToRaw (sKeyHexDigits)
+	abyMacKey            <- hexDigitsToRaw (sMacKeyHexDigits)
+	abyEncryptedPassword <- hexDigitsToRaw (sEncryptedPasswordHexDigits)
+	abyASN1EncodedIV     <- hexDigitsToRaw (sASN1EncodedIVHexDigits)
 
-  abyContent <- c (abyEncryptedPassword, charToRaw (sTransformation), abyASN1EncodedIV)
+	abyContent <- c (abyEncryptedPassword, charToRaw (sTransformation), abyASN1EncodedIV)
 
-  hash <- digest::hmac (abyMacKey, abyContent, algo = j2r (sMACAlgorithm))
+	hash <- digest::hmac (abyMacKey, abyContent, algo = j2r (sMACAlgorithm))
 
-  if (sHashHexDigits != hash) {
-    stop (paste0 ("Hash mismatch indicates possible tampering with file ", sPassKeyFileName, " or ", sEncPassFileName))
-  }
+	if (sHashHexDigits != hash) {
+		stop (paste0 ("Hash mismatch indicates possible tampering with file ", sPassKeyFileName, " or ", sEncPassFileName))
+	}
 
-  nKeySizeInBytes <- length (abyKey)
-  nKeySizeInBits  <- nKeySizeInBytes * 8
+	nKeySizeInBytes <- length (abyKey)
+	nKeySizeInBits  <- nKeySizeInBytes * 8
 
-  cat (paste0 (sPassKeyFileName, " specifies ", sTransformation, " with ", nKeySizeInBits, "-bit key and ", sMACAlgorithm, "\n"))
+	cat (paste0 (sPassKeyFileName, " specifies ", sTransformation, " with ", nKeySizeInBits, "-bit key and ", sMACAlgorithm, "\n"))
 
-  abyIV <- asn1Decode (abyASN1EncodedIV)
+	abyIV <- asn1Decode (abyASN1EncodedIV)
 
-  cipher <- digest::AES (abyKey, mode = sMode, IV = abyIV)
+	cipher <- digest::AES (abyKey, mode = sMode, IV = abyIV)
 
-  abyPassword <- cipher$decrypt (abyEncryptedPassword, raw = TRUE)
+	abyPassword <- cipher$decrypt (abyEncryptedPassword, raw = TRUE)
 
-  if (bPadding) {
-    abyPassword <- removePKCS5Padding (abyPassword)
-  }
+	if (bPadding) {
+		abyPassword <- removePKCS5Padding (abyPassword)
+	}
 
-  iZeroByte <- match (raw (1), abyPassword)
-  abyPassword <- abyPassword [1 : iZeroByte - 1] # remove trailing zero-byte padding
+	iZeroByte <- match (raw (1), abyPassword)
+	abyPassword <- abyPassword [1 : iZeroByte - 1] # remove trailing zero-byte padding
 
-  sPassword <- stringi::stri_encode (abyPassword, from = "UTF-8", to = "UTF-8")
+	sPassword <- stringi::stri_encode (abyPassword, from = "UTF-8", to = "UTF-8")
 
-  cat (paste0 ("Decrypted password: ", sPassword, "\n"))
+	cat (paste0 ("Decrypted password: ", sPassword, "\n"))
 
-  return (sPassword)
+	return (sPassword)
 
 } # end decryptPassword
 
 hexDigitsToRaw <- function (sHexDigits) {
 
-  return (as.raw (strtoi (substring (sHexDigits, seq (1, nchar (sHexDigits), by = 2), seq (2, nchar (sHexDigits), by = 2)), 16)))
+	return (as.raw (strtoi (substring (sHexDigits, seq (1, nchar (sHexDigits), by = 2), seq (2, nchar (sHexDigits), by = 2)), 16)))
 
 } # end hexDigitsToRaw
 
 asn1Encode <- function (abyDigits) {
 
-  return (c (as.raw (4), as.raw (length (abyDigits)), abyDigits))
+	return (c (as.raw (4), as.raw (length (abyDigits)), abyDigits))
 
 } # end asn1Encode
 
 asn1Decode <- function (abyEncoded) {
 
-  return (abyEncoded [3 : length (abyEncoded)])
+	return (abyEncoded [3 : length (abyEncoded)])
 
 } # end asn1Decode
 
 addPKCS5Padding <- function (abyData, nBlockSize) {
 
-  nPaddedDataLength <- (length (abyData) %/% nBlockSize + 1) * nBlockSize
-  nPadCount <- nPaddedDataLength - length (abyData)
-  abyPad <- as.raw (seq (nPadCount, nPadCount, length = nPadCount))
-  return (c (abyData, abyPad))
+	nPaddedDataLength <- (length (abyData) %/% nBlockSize + 1) * nBlockSize
+	nPadCount <- nPaddedDataLength - length (abyData)
+	abyPad <- as.raw (seq (nPadCount, nPadCount, length = nPadCount))
+	return (c (abyData, abyPad))
 
 } # end addPKCS5Padding
 
 removePKCS5Padding <- function (abyPaddedData) {
 
-  nPadCount <- as.integer (abyPaddedData [length (abyPaddedData)])
-  return (abyPaddedData [1 : (length (abyPaddedData) - nPadCount)])
+	nPadCount <- as.integer (abyPaddedData [length (abyPaddedData)])
+	return (abyPaddedData [1 : (length (abyPaddedData) - nPadCount)])
 
 } # end removePKCS5Padding
 
 main <- function () {
 
-  args <- commandArgs (trailingOnly = TRUE)
+	args <- commandArgs (trailingOnly = TRUE)
 
-  if (length (args) != 8) {
-    stop ("Parameters: Transformation KeySizeInBits MAC PasswordEncryptionKeyFileName EncryptedPasswordFileName Hostname Username Password\n")
-  }
+	if (length (args) != 8) {
+		stop ("Parameters: Transformation KeySizeInBits MAC PasswordEncryptionKeyFileName EncryptedPasswordFileName Hostname Username Password\n")
+	}
 
-  sTransformation  <- args [1]
-  sKeySizeInBits   <- args [2]
-  sMac             <- args [3]
-  sPassKeyFileName <- args [4]
-  sEncPassFileName <- args [5]
-  sHostname        <- args [6]
-  sUsername        <- args [7]
-  sPassword        <- args [8]
+	sTransformation  <- args [1]
+	sKeySizeInBits   <- args [2]
+	sMac             <- args [3]
+	sPassKeyFileName <- args [4]
+	sEncPassFileName <- args [5]
+	sHostname        <- args [6]
+	sUsername        <- args [7]
+	sPassword        <- args [8]
 
-  asTransformationParts <- unlist (strsplit (sTransformation, "/"))
-  if (length (asTransformationParts) != 3) {
-    stop (paste0 ("Invalid transformation ", sTransformation))
-  }
+	asTransformationParts <- unlist (strsplit (sTransformation, "/"))
+	if (length (asTransformationParts) != 3) {
+		stop (paste0 ("Invalid transformation ", sTransformation))
+	}
 
-  sAlgorithm <- asTransformationParts [1]
-  sMode      <- asTransformationParts [2]
-  sPadding   <- asTransformationParts [3]
+	sAlgorithm <- asTransformationParts [1]
+	sMode      <- asTransformationParts [2]
+	sPadding   <- asTransformationParts [3]
 
-  if (! sAlgorithm %in% c ("AES")) {
-    stop (paste0 ("Unknown algorithm ", sAlgorithm))
-  }
+	if (! sAlgorithm %in% c ("AES")) {
+		stop (paste0 ("Unknown algorithm ", sAlgorithm))
+	}
 
-  if (! sMode %in% c ("CBC", "CFB")) {
-    stop (paste0 ("Unknown mode ", sMode))
-  }
+	if (! sMode %in% c ("CBC", "CFB")) {
+		stop (paste0 ("Unknown mode ", sMode))
+	}
 
-  if (! sPadding %in% c ("PKCS5Padding", "NoPadding")) {
-    stop (paste0 ("Unknown padding ", sPadding))
-  }
+	if (! sPadding %in% c ("PKCS5Padding", "NoPadding")) {
+		stop (paste0 ("Unknown padding ", sPadding))
+	}
 
-  if (! sMac %in% c ("HmacSHA1", "HmacSHA256")) {
-    stop (paste0 ("Unknown MAC algorithm ", sMac))
-  }
+	if (! sMac %in% c ("HmacSHA1", "HmacSHA256")) {
+		stop (paste0 ("Unknown MAC algorithm ", sMac))
+	}
 
-  if (sPassword == "") {
-    stop ("Password cannot be zero length")
-  }
+	if (sPassword == "") {
+		stop ("Password cannot be zero length")
+	}
 
-  sPassword <- stringi::stri_unescape_unicode (sPassword) # for backslash uXXXX escape sequences
+	sPassword <- stringi::stri_unescape_unicode (sPassword) # for backslash uXXXX escape sequences
 
-  nKeySizeInBits <- as.numeric (sKeySizeInBits)
+	nKeySizeInBits <- as.numeric (sKeySizeInBits)
 
-  sMatch <- strftime (Sys.time (),"%Y-%m-%d.%H:%M:%OS3")
+	sMatch <- strftime (Sys.time (),"%Y-%m-%d.%H:%M:%OS3")
 
-  keys <- createPasswordEncryptionKeyFile (sTransformation, sAlgorithm, sMode, sPadding, nKeySizeInBits, sMatch, sMac, sPassKeyFileName)
+	keys <- createPasswordEncryptionKeyFile (sTransformation, sAlgorithm, sMode, sPadding, nKeySizeInBits, sMatch, sMac, sPassKeyFileName)
 
-  createEncryptedPasswordFile (sTransformation, sAlgorithm, sMode, sPadding, sMatch, keys$abyKey, sMac, keys$abyMacKey, sEncPassFileName, sPassword)
+	createEncryptedPasswordFile (sTransformation, sAlgorithm, sMode, sPadding, sMatch, keys$abyKey, sMac, keys$abyMacKey, sEncPassFileName, sPassword)
 
-  decryptPassword (sPassKeyFileName, sEncPassFileName)
+	decryptPassword (sPassKeyFileName, sEncPassFileName)
 
-  sPassword <- paste0 ("ENCRYPTED_PASSWORD(file:", sPassKeyFileName, ",file:", sEncPassFileName, ")")
+	sPassword <- paste0 ("ENCRYPTED_PASSWORD(file:", sPassKeyFileName, ",file:", sEncPassFileName, ")")
 
-  con <- DBI::dbConnect (teradatasql::TeradataDriver (), host = sHostname, user = sUsername, password = sPassword)
+	con <- DBI::dbConnect (teradatasql::TeradataDriver (), host = sHostname, user = sUsername, password = sPassword)
 
-  tryCatch ({
+	tryCatch ({
 
-    df <- DBI::dbGetQuery (con, "select user, session")
-    print (df)
+		df <- DBI::dbGetQuery (con, "select user, session")
+		print (df)
 
-  }, finally = {
+	}, finally = {
 
-    DBI::dbDisconnect (con)
+		DBI::dbDisconnect (con)
 
-  }) # end finally
+	}) # end finally
 
 } # end main
 
 withCallingHandlers (main (), error = function (e) {
-  listStackFrames <- head (tail (sys.calls (), -1), -2) # omit first one and last two
-  nStackFrameCount <- length (listStackFrames)
-  cat (paste0 ("[", 1 : nStackFrameCount, "/", nStackFrameCount, "] ", listStackFrames, "\n\n", collapse = ""))
+	listStackFrames <- head (tail (sys.calls (), -1), -2) # omit first one and last two
+	nStackFrameCount <- length (listStackFrames)
+	cat (paste0 ("[", 1 : nStackFrameCount, "/", nStackFrameCount, "] ", listStackFrames, "\n\n", collapse = ""))
 })

@@ -1028,13 +1028,19 @@ Returns a list with names `statement`, `row.count`, `rows.affected`, and `has.co
 
 `DBI::dbGetRowCount(` *res* `)`
 
-Returns the number of rows fetched so far from the result.
+Returns the number of rows fetched from this result by the `dbFetch` method.
+
+If the row count exceeds the maximum numeric value, returns the maximum numeric value and provides a warning to indicate the actual row count in the warning message.
+
+Database row counts have an upper limit of 9,223,372,036,854,775,807 (hexadecimal FFFF FFFF FFFF FFFF) and can exceed the maximum numeric value 9,007,199,254,740,991 (hexadecimal 1F FFFF FFFF FFFF).
 
 ---
 
 `DBI::dbGetRowsAffected(` *res* `)`
 
 Returns the number of rows affected by the SQL statement.
+
+If the row count exceeds the maximum numeric value, returns the maximum numeric value and provides a warning to indicate the actual row count in the warning message.
 
 ---
 
@@ -1475,6 +1481,10 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.10.0.7` - March 9, 2022
+* GOSQL-84 accommodate 64-bit Activity Count
+* GOSQL-92 FastLoad returns error 512 when first column value is NULL
 
 `17.10.0.6` - February 23, 2022
 * GOSQL-91 Avoid Error 8019 by always sending Config Request message
