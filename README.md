@@ -90,7 +90,7 @@ The driver depends on the `bit64`, `DBI`, `digest`, and `hms` packages which are
 
 To download and install dependencies automatically, specify the Teradata R package repository and CRAN in the `repos` argument for `install.packages`.
 
-    Rscript -e "install.packages('teradatasql',repos=c('https://teradata-download.s3.amazonaws.com','https://cloud.r-project.org'))"
+    Rscript -e "install.packages('teradatasql',repos=c('https://r-repo.teradata.com','https://cloud.r-project.org'))"
 
 <a name="License"></a>
 
@@ -1502,7 +1502,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
-`17.10.0.10` - April 15, 2022
+`17.10.0.12` - April 26, 2022
+* Teradata R public repository URL change
+
+`17.10.0.11` - April 15, 2022
 * GOSQL-71 TLS certificate verification
 * GOSQL-98 remove escape function teradata_setloglevel
 
