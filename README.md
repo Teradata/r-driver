@@ -1506,10 +1506,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
-`17.10.0.13` - May 16, 2022
-* GOSQL-53 browser and logmech=BROWSER connection parameters
-* GOSQL-56 Implement Federated Authentication feature in GoSQL Driver
-* RDBI-65 Implement Federated Authentication feature in R driver
+`17.10.0.14` - May 18, 2022
+* GOSQL-104 FastExport reports invalid CSV path name for first query but not subsequent
+* GOSQL-105 Avoid driver failure when database warning length is invalid
 
 `17.10.0.12` - April 26, 2022
 * Teradata R public repository URL change
