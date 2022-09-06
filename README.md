@@ -1508,6 +1508,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.3` - September 6, 2022
+* GOSQL-118 teradata_write_csv support for queries containing commas
+
 `17.20.0.2` - August 23, 2022
 * GOSQL-117 browser_tab_timeout connection parameter
 
