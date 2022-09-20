@@ -283,7 +283,7 @@ Stored Password Protection is offered by this driver, the Teradata JDBC Driver, 
 
 This program works in conjunction with Stored Password Protection offered by the driver. This program creates the files containing the password encryption key and encrypted password, which can be subsequently specified via the `ENCRYPTED_PASSWORD(` syntax.
 
-You are not required to use this program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files. You also use the [`TJEncryptPassword.py`](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py) sample program that is available with the Teradata SQL Driver for Python. You may also use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html). The only requirement is that the files must match the format expected by the driver, which is documented below.
+You are not required to use this program to create the files containing the password encryption key and encrypted password. You can develop your own software to create the necessary files. You may also use the [`TJEncryptPassword.py`](https://github.com/Teradata/python-driver/blob/master/samples/TJEncryptPassword.py) sample program that is available with the Teradata SQL Driver for Python. You may also use the [`TJEncryptPassword.java`](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/samp/TJEncryptPassword.java.txt) sample program that is available with the [Teradata JDBC Driver Reference](https://downloads.teradata.com/doc/connectivity/jdbc/reference/current/frameset.html). The only requirement is that the files must match the format expected by the driver, which is documented below.
 
 This program encrypts the password and then immediately decrypts the password, in order to verify that the password can be successfully decrypted. This program mimics the password decryption of the driver, and is intended to openly illustrate its operation and enable scrutiny by the community.
 
@@ -1507,6 +1507,10 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.6` - September 19, 2022
+* Build DLL and shared library with Go 1.18.6
+* Change package to opt out of StagedInstall
 
 `17.20.0.5` - September 15, 2022
 * Additional changes for GOSQL-119 avoid nil pointer dereference for FastExport CSV error
