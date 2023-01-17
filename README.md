@@ -12,7 +12,7 @@ For Teradata customer support, please visit [Teradata Customer Service](https://
 
 Please note, this driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to agreeing to the licensing terms below, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-Copyright 2022 Teradata. All Rights Reserved.
+Copyright 2023 Teradata. All Rights Reserved.
 
 ### Table of Contents
 
@@ -1515,6 +1515,9 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.13` - January 17, 2023
+* GOSQL-133 return FastLoad errors for FastLoad with teradata_read_csv
 
 `17.20.0.12` - December 2, 2022
 * Build DLL and shared library with Go 1.19.3

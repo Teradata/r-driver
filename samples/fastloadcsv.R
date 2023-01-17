@@ -101,14 +101,6 @@ main <- function () {
 				cat (paste0 (sRequest, "\n"))
 				DBI::dbExecute (con, sRequest)
 
-				sRequest <- paste0 ("DROP TABLE ", sTableName, "_ERR_1")
-				cat (paste0 (sRequest, "\n"))
-				DBI::dbExecute (con, sRequest)
-
-				sRequest <- paste0 ("DROP TABLE ", sTableName, "_ERR_2")
-				cat (paste0 (sRequest, "\n"))
-				DBI::dbExecute (con, sRequest)
-
 			}) # end finally
 
 		}, finally = {
