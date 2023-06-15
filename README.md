@@ -67,6 +67,8 @@ At the present time, the driver offers the following features.
 * Most JDBC escape syntax.
 * Parameterized SQL requests with question-mark parameter markers.
 * Parameterized batch SQL requests with multiple rows of data bound to question-mark parameter markers.
+* Auto-Generated Key Retrieval (AGKR) for identity column values and more.
+* Large Object (LOB) support for the BLOB and CLOB data types.
 * Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
 * ElicitFile protocol support for DDL commands that create external UDFs or stored procedures and upload a file from client to database.
 * `CREATE PROCEDURE` and `REPLACE PROCEDURE` commands.
@@ -1346,6 +1348,7 @@ Request-scope function escape clauses are removed before the SQL request text is
 
 Request-Scope Function                                 | Effect
 ------------------------------------------------------ | ---
+`{fn teradata_agkr(`*Option*`)}`                       | Executes the SQL request with Auto-Generated Key Retrieval (AGKR) *Option* `C` (identity column value) or `R` (entire row)
 `{fn teradata_clobtranslate(`*Option*`)}`              | Executes the SQL request with CLOB translate *Option* `U` (unlocked) or the default `L` (locked)
 `{fn teradata_error_query_count(`*Number*`)}`          | Specifies how many times the driver will attempt to query FastLoad Error Table 1 after a FastLoad operation. Takes precedence over the `error_query_count` connection parameter.
 `{fn teradata_error_query_interval(`*Milliseconds*`)}` | Specifies how many milliseconds the driver will wait between attempts to query FastLoad Error Table 1. Takes precedence over the `error_query_interval` connection parameter.
@@ -1564,6 +1567,12 @@ Limitations when exporting to CSV files:
 <a name="ChangeLog"></a>
 
 ### Change Log
+
+`17.20.0.26` - June 15, 2023
+* GOSQL-165 Auto-Generated Key Retrieval (AGKR)
+* GOSQL-166 error loading libR.dylib when running RStudio on Mac
+* GOSQL-167 use loopback IP address for OIDC redirect
+* RDBI-106 dbHasCompleted incorrectly returns false in some cases
 
 `17.20.0.25` - June 2, 2023
 * GOSQL-142 sp_spl connection parameter
