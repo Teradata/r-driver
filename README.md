@@ -1568,6 +1568,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.27` - June 23, 2023
+* Additional changes for GOSQL-128 use OIDC scope from Gateway Config parcel
+
 `17.20.0.26` - June 15, 2023
 * GOSQL-165 Auto-Generated Key Retrieval (AGKR)
 * GOSQL-166 error loading libR.dylib when running RStudio on Mac
