@@ -1568,6 +1568,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`17.20.0.30` - September 19, 2023
+* GOSQL-175 avoid panic: cannot create context from nil parent
+
 `17.20.0.29` - September 5, 2023
 * Build DLL and shared library with Go 1.19.12
 
