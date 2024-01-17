@@ -44,7 +44,7 @@ Copyright 2024 Teradata. All Rights Reserved.
 * [CSV Export Results](#CSVExportResults)
 * [Change Log](#ChangeLog)
 
-<a name="Features"></a>
+<a id="Features"></a>
 
 ### Features
 
@@ -75,7 +75,7 @@ At the present time, the driver offers the following features.
 * Stored Procedure Dynamic Result Sets.
 * FastLoad and FastExport.
 
-<a name="Limitations"></a>
+<a id="Limitations"></a>
 
 ### Limitations
 
@@ -83,7 +83,7 @@ At the present time, the driver offers the following features.
 * No support yet for Recoverable Network Protocol and Redrive.
 * Monitor partition support is not available yet.
 
-<a name="Installation"></a>
+<a id="Installation"></a>
 
 ### Installation
 
@@ -95,7 +95,7 @@ To download and install dependencies automatically, specify the Teradata R packa
 
     Rscript -e "install.packages('teradatasql',repos=c('https://r-repo.teradata.com','https://cloud.r-project.org'))"
 
-<a name="License"></a>
+<a id="License"></a>
 
 ### License
 
@@ -107,7 +107,7 @@ When the driver is installed, the `LICENSE` and `THIRDPARTYLICENSE` files are pl
 
 In addition to the license terms, the driver may contain beta/preview features ("Beta Features"). As such, by downloading and/or using the driver, in addition to the licensing terms, you acknowledge that the Beta Features are experimental in nature and that the Beta Features are provided "AS IS" and may not be functional on any machine or in any environment.
 
-<a name="Documentation"></a>
+<a id="Documentation"></a>
 
 ### Documentation
 
@@ -117,7 +117,7 @@ When the driver is installed, the `README.md` file is placed in the `teradatasql
 
 The `README.md` file is a plain text file containing the documentation for the driver. While the file can be viewed with any text file viewer or editor, your viewing experience will be best with an editor that understands Markdown format.
 
-<a name="SamplePrograms"></a>
+<a id="SamplePrograms"></a>
 
 ### Sample Programs
 
@@ -154,7 +154,7 @@ Program                                                                         
 [insertxml.R](https://github.com/Teradata/r-driver/blob/master/samples/insertxml.R)                 | Demonstrates how to insert and retrieve XML values
 [TJEncryptPassword.R](https://github.com/Teradata/r-driver/blob/master/samples/TJEncryptPassword.R) | Creates encrypted password files
 
-<a name="Using"></a>
+<a id="Using"></a>
 
 ### Using the Driver
 
@@ -176,7 +176,7 @@ Connection parameters specified using a combination:
 
 When a combination of parameters are specified, connection parameters specified as named arguments take precedence over same-named connection parameters specified in the JSON string.
 
-<a name="ConnectionParameters"></a>
+<a id="ConnectionParameters"></a>
 
 ### Connection Parameters
 
@@ -209,7 +209,13 @@ Parameter               | Default     | Type           | Description
 `field_sep`             | `","`       | string         | Specifies a single character string used to separate fields in a CSV file. Equivalent to the Teradata JDBC Driver `FIELD_SEP` connection parameter.
 `govern`                | `"true"`    | quoted boolean | Controls FastLoad and FastExport throttling by Teradata workload management rules. When set to `true` (the default), workload management rules may delay a FastLoad or FastExport. When set to `false`, workload management rules will reject rather than delay a FastLoad or FastExport. Equivalent to the Teradata JDBC Driver `GOVERN` connection parameter.
 `host`                  |             | string         | Specifies the database hostname.
+`http_proxy`            |             | string         | Specifies the proxy server URL for HTTP connections to TLS certificate verification CRL and OCSP endpoints. The URL must begin with `http://` and must include a colon `:` and port number.
+`http_proxy_password`   |             | string         | Specifies the proxy server password for the proxy server identified by the `http_proxy` parameter. This parameter may only be specified in conjunction with the `http_proxy` parameter. When this parameter is omitted, no proxy server password is provided to the proxy server identified by the `http_proxy` parameter.
+`http_proxy_user`       |             | string         | Specifies the proxy server username for the proxy server identified by the `http_proxy` parameter. This parameter may only be specified in conjunction with the `http_proxy` parameter. When this parameter is omitted, no proxy server username is provided to the proxy server identified by the `http_proxy` parameter.
 `https_port`            | `"443"`     | quoted integer | Specifies the database port number for HTTPS/TLS connections. Equivalent to the Teradata JDBC Driver `HTTPS_PORT` connection parameter.
+`https_proxy`           |             | string         | Specifies the proxy server URL for HTTPS/TLS connections to the database and to Identity Provider endpoints. The URL must begin with `http://` and must include a colon `:` and port number. The driver connects to the proxy server using a non-TLS HTTP connection, then uses the HTTP CONNECT method to establish an HTTPS/TLS connection to the destination. Equivalent to the Teradata JDBC Driver `HTTPS_PROXY` connection parameter.
+`https_proxy_password`  |             | string         | Specifies the proxy server password for the proxy server identified by the `https_proxy` parameter. This parameter may only be specified in conjunction with the `https_proxy` parameter. When this parameter is omitted, no proxy server password is provided to the proxy server identified by the `https_proxy` parameter. Equivalent to the Teradata JDBC Driver `HTTPS_PROXY_PASSWORD` connection parameter.
+`https_proxy_user`      |             | string         | Specifies the proxy server username for the proxy server identified by the `https_proxy` parameter. This parameter may only be specified in conjunction with the `https_proxy` parameter. When this parameter is omitted, no proxy server username is provided to the proxy server identified by the `https_proxy` parameter. Equivalent to the Teradata JDBC Driver `HTTPS_PROXY_USER` connection parameter.
 `immediate`             | `"true"`    | quoted boolean | Controls whether `DBI::dbSendQuery` and `DBI::dbSendStatement` execute the SQL request when the `params` and `immediate` arguments are omitted.
 `lob_support`           | `"true"`    | quoted boolean | Controls LOB support. Equivalent to the Teradata JDBC Driver `LOB_SUPPORT` connection parameter.
 `log`                   | `"0"`       | quoted integer | Controls debug logging. Somewhat equivalent to the Teradata JDBC Driver `LOG` connection parameter. This parameter's behavior is subject to change in the future. This parameter's value is currently defined as an integer in which the 1-bit governs function and method tracing, the 2-bit governs debug logging, the 4-bit governs transmit and receive message hex dumps, and the 8-bit governs timing. Compose the value by adding together 1, 2, 4, and/or 8.
@@ -224,6 +230,7 @@ Parameter               | Default     | Type           | Description
 `partition`             | `"DBC/SQL"` | string         | Specifies the database partition. Equivalent to the Teradata JDBC Driver `PARTITION` connection parameter.
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
 `posixlt`               | `"false"`   | quoted boolean | Controls whether `POSIXlt` subclasses are used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
+`proxy_bypass_hosts`    |             | string | Specifies a matching pattern for hostnames and addresses to bypass the proxy server identified by the `http_proxy` and/or `https_proxy` parameter. This parameter may only be specified in conjunction with the `http_proxy` and/or `https_proxy` parameter. Separate multiple hostnames and addresses with a vertical bar `\|` character. Specify an asterisk `*` as a wildcard character. When this parameter is omitted, the default pattern `localhost\|127.*\|[::1]` bypasses the proxy server identified by the `http_proxy` and/or `https_proxy` parameter for common variations of the loopback address. Equivalent to the Teradata JDBC Driver `PROXY_BYPASS_HOSTS` connection parameter.
 `request_timeout`       | `"0"`       | quoted integer | Specifies the timeout for executing each SQL request. Zero means no timeout.
 `runstartup`            | `"false"`   | quoted boolean | Controls whether the user's `STARTUP` SQL request is executed after logon. For more information, refer to [User STARTUP SQL Request](#UserStartup). Equivalent to the Teradata JDBC Driver `RUNSTARTUP` connection parameter.
 `sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
@@ -239,7 +246,7 @@ Parameter               | Default     | Type           | Description
 `tmode`                 | `"DEFAULT"` | string         | Specifies the transaction mode. Equivalent to the Teradata JDBC Driver `TMODE` connection parameter. Possible values are `DEFAULT` (the default), `ANSI`, or `TERA`.
 `user`                  |             | string         | Specifies the database username. Equivalent to the Teradata JDBC Driver `USER` connection parameter.
 
-<a name="COPDiscovery"></a>
+<a id="COPDiscovery"></a>
 
 ### COP Discovery
 
@@ -274,7 +281,7 @@ The driver masks connection failures to down COPs, thereby hiding most connectio
 
 If COP Discovery is turned off, or no COP hostnames are defined in DNS, the driver connects directly to the hostname specified in the `host` connection parameter. This permits load distribution schemes other than the COP Discovery approach. For example, round-robin DNS or a TCP/IP load distribution product can be used. COP Discovery takes precedence over simple database hostname lookup. To use an alternative load distribution scheme, either ensure that no COP hostnames are defined in DNS, or turn off COP Discovery with `cop` as `false`.
 
-<a name="StoredPasswordProtection"></a>
+<a id="StoredPasswordProtection"></a>
 
 ### Stored Password Protection
 
@@ -466,7 +473,7 @@ Before decryption, the driver calculates the MAC using the ciphertext, transform
 
 Finally, the driver uses the decrypted password to log on to the database.
 
-<a name="ClientAttributes"></a>
+<a id="ClientAttributes"></a>
 
 ### Client Attributes
 
@@ -519,7 +526,7 @@ Field | Source   | Description
 7     | driver   | The client program name
 8     | driver   | The string `01 LSS` to indicate the `LogonSource` string version `01`
 
-<a name="UserStartup"></a>
+<a id="UserStartup"></a>
 
 ### User STARTUP SQL Request
 
@@ -543,7 +550,7 @@ For example, the following command sets a `STARTUP` SQL request for user `susan`
 
 The driver's `runstartup` connection parameter must be `true` to execute the user's `STARTUP` SQL request after logon. The default for `runstartup` is `false`. If the `runstartup` connection parameter is omitted or `false`, then the user's `STARTUP` SQL request will not be executed.
 
-<a name="TransactionMode"></a>
+<a id="TransactionMode"></a>
 
 ### Transaction Mode
 
@@ -566,7 +573,7 @@ A drawback of using ANSI mode is that you can only call stored procedures that w
 
 Refer to the Teradata Reference / *SQL Request and Transaction Processing* for complete information regarding the differences between ANSI and TERA transaction modes.
 
-<a name="AutoCommit"></a>
+<a id="AutoCommit"></a>
 
 ### Auto-Commit
 
@@ -618,7 +625,7 @@ Please note that neither previous example shows best practices. Best practices r
     DBI::dbExecute(con, "insert into mytable2 values(3, 4)")
     DBI::dbCommit(con)
 
-<a name="DataTypes"></a>
+<a id="DataTypes"></a>
 
 ### Data Types
 
@@ -689,7 +696,7 @@ Transforms are used for SQL `ARRAY` data values, and they can be transferred to 
 
 Transforms are used for structured UDT data values, and they can be transferred to and from the database as `VARCHAR` values.
 
-<a name="NullValues"></a>
+<a id="NullValues"></a>
 
 ### Null Values
 
@@ -709,7 +716,7 @@ To avoid database error 3532 in this situation, your application must use the th
 
     DBI::dbExecute(con, "{fn teradata_parameter(1, BYTE(4))}update mytable set bytecolumn = ?", data.frame (bytecolumn = NA))
 
-<a name="CharacterExportWidth"></a>
+<a id="CharacterExportWidth"></a>
 
 ### Character Export Width
 
@@ -741,7 +748,7 @@ Or wrap query in a view with `CAST` or `TRIM` to avoid trailing space padding:
 
 This technique is also demonstrated in sample program `charpadding.R`.
 
-<a name="Constructors"></a>
+<a id="Constructors"></a>
 
 ### Constructors
 
@@ -780,7 +787,7 @@ Creates and returns a `TimestampWithTimeZone` value subclass of `POSIXlt`. The `
 * `YYYY-MM-DD HH:MM:SS.SSSSSS+MM:SS` Optional 1 to 6 digits of fractional seconds
 * `YYYY-MM-DD HH:MM:SS.SSSSSS-MM:SS`
 
-<a name="DriverMethods"></a>
+<a id="DriverMethods"></a>
 
 ### Driver Methods
 
@@ -822,7 +829,7 @@ Returns `FALSE`.
 
 Returns `TRUE`.
 
-<a name="ConnectionMethods"></a>
+<a id="ConnectionMethods"></a>
 
 ### Connection Methods
 
@@ -1031,7 +1038,7 @@ To override the column names or column types derived from *value*, specify `fiel
 If `temporary` is `FALSE` (the default), a permanent table is created.
 If `temporary` is `TRUE`, a volatile table is created.
 
-<a name="ResultMethods"></a>
+<a id="ResultMethods"></a>
 
 ### Result Methods
 
@@ -1125,7 +1132,7 @@ Advances to the next result returned by a multi-statement request.
 Returns `TRUE` to indicate that the next result is available.
 Returns `FALSE` otherwise.
 
-<a name="EscapeSyntax"></a>
+<a id="EscapeSyntax"></a>
 
 ### Escape Syntax
 
@@ -1395,7 +1402,7 @@ To represent a double-quote character in a string enclosed in double-quote chara
 
     {fn teradata_field_quote("""")}
 
-<a name="FastLoad"></a>
+<a id="FastLoad"></a>
 
 ### FastLoad
 
@@ -1450,7 +1457,7 @@ Your application ends FastLoad by committing or rolling back the current transac
 
 Warning and error information remains available until the next batch is inserted or until the commit or rollback. Each batch execution clears the prior warnings and errors. Each commit or rollback clears the prior warnings and errors.
 
-<a name="FastExport"></a>
+<a id="FastExport"></a>
 
 ### FastExport
 
@@ -1481,7 +1488,7 @@ Your application can prepend other optional escape functions to the query:
 After beginning a FastExport, your application can obtain the Logon Sequence Number (LSN) assigned to the FastExport by prepending the following escape functions to the query:
 * `{fn teradata_nativesql}{fn teradata_logon_sequence_number}` returns the string form of an integer representing the Logon Sequence Number (LSN) for the FastExport. Returns an empty string if the request is not a FastExport.
 
-<a name="CSVBatchInserts"></a>
+<a id="CSVBatchInserts"></a>
 
 ### CSV Batch Inserts
 
@@ -1512,7 +1519,7 @@ Limitations when using CSV batch inserts:
 * For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned. Each parser error will include the line number (starting at line 1) and the column number (starting at zero).
 * Using a CSV file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
 
-<a name="CSVExportResults"></a>
+<a id="CSVExportResults"></a>
 
 ### CSV Export Results
 
@@ -1564,9 +1571,12 @@ Limitations when exporting to CSV files:
 * Not all data types are supported. For example, `BLOB`, `BYTE`, and `VARBYTE` are not supported and if one of these column types are present in the result set, an error will be returned.
 * `CLOB`, `XML`, `JSON`, and `DATASET STORAGE FORMAT CSV` data types are supported for SQL query results and are exported as string values, but these data types are not supported by FastExport.
 
-<a name="ChangeLog"></a>
+<a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.5` - January 17, 2024
+* GOSQL-151 proxy server support
 
 `20.0.0.4` - January 9, 2024
 * Build DLL and shared library with Go 1.20.12
