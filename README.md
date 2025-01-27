@@ -522,6 +522,7 @@ Client Attribute            | Source   | Description
 `ClientOsName`              | driver   | The client operating system name
 `ClientProcThreadId`        | driver   | The client process ID
 `ClientVmName`              | driver   | R language runtime information
+`ClientSecProdGrp`          | driver   | Go crypto library version
 `ClientTdHostName`          | driver   | The database hostname as specified by the application, without any COP suffix
 `ClientCOPSuffixedHostName` | driver   | The COP-suffixed database hostname chosen by the driver
 `ServerIPAddrByClient`      | driver   | The database node's IP address, as determined by the driver
@@ -1601,6 +1602,11 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.23` - January 27, 2025
+* client attribute ClientSecProdGrp indicates Go crypto library version
+* Build DLL and shared library with Go 1.23.5
+* Build DLL and shared library with golang.org/x/crypto v0.32.0
 
 `20.0.0.22` - January 6, 2025
 * Debug logging for Kerberos library dynamic loading and linking
