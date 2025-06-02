@@ -98,7 +98,7 @@ At the present time, the driver offers the following features.
 
 The driver contains binary code and cannot be offered from [CRAN](https://cran.r-project.org/). The driver is available from Teradata's R package repository.
 
-The driver depends on the `bit64`, `crfsuite`, `DBI`, `digest`, `hms`, and `Rcpp` packages which are available from CRAN.
+The driver depends on the `bit64`, `DBI`, `digest`, `hms`, and `Rcpp` packages which are available from CRAN.
 
 To download and install dependencies automatically, specify the Teradata R package repository and CRAN in the `repos` argument for `install.packages`.
 
@@ -1718,6 +1718,10 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.31` - June 2, 2025
+* Build DLL and shared library with standard Go 1.24.3
+* Eliminate dependency on package crfsuite
 
 `20.0.0.30` - April 25, 2025
 * GOSQL-32 DBCCONS partition
