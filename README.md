@@ -1779,6 +1779,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.37` - August 21, 2025
+* GOSQL-238 Avoid panic: runtime error: slice bounds out of range from getParcelHeadersFromMessage
+
 `20.0.0.36` - August 20, 2025
 * GOSQL-237 Avoid error for missing file /proc/sys/crypto/fips_enabled
 
