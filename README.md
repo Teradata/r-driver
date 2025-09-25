@@ -261,7 +261,7 @@ Parameter               | Default     | Type           | Description
 `password`              |             | string         | Specifies the database password. Equivalent to the Teradata JDBC Driver `PASSWORD` connection parameter.
 `posixlt`               | `"false"`   | quoted boolean | Controls whether `POSIXlt` subclasses are used for certain result set column value types. Refer to the [Data Types](#DataTypes) table below for details.
 `proxy_bypass_hosts`    |             | string         | Specifies a matching pattern for hostnames and addresses to bypass the proxy server identified by the `http_proxy` and/or `https_proxy` parameter. This parameter may only be specified in conjunction with the `http_proxy` and/or `https_proxy` parameter. Separate multiple hostnames and addresses with a vertical bar `\|` character. Specify an asterisk `*` as a wildcard character. When this parameter is omitted, the default pattern `localhost\|127.*\|[::1]` bypasses the proxy server identified by the `http_proxy` and/or `https_proxy` parameter for common variations of the loopback address. Equivalent to the Teradata JDBC Driver `PROXY_BYPASS_HOSTS` connection parameter.
-`request_timeout`       | `"0"`       | quoted integer | Specifies the timeout for executing each SQL request. Zero means no timeout.
+`request_timeout`       | `"0"`       | quoted integer | Specifies the timeout in seconds for executing each SQL request. Zero means no timeout.
 `runstartup`            | `"false"`   | quoted boolean | Controls whether the user's `STARTUP` SQL request is executed after logon. For more information, refer to [User STARTUP SQL Request](#UserStartup). Equivalent to the Teradata JDBC Driver `RUNSTARTUP` connection parameter.
 `sessions`              |             | quoted integer | Specifies the number of data transfer connections for FastLoad or FastExport. The default (recommended) lets the database choose the appropriate number of connections. Equivalent to the Teradata JDBC Driver `SESSIONS` connection parameter.
 `sip_support`           | `"true"`    | quoted boolean | Controls whether StatementInfo parcel is used. Equivalent to the Teradata JDBC Driver `SIP_SUPPORT` connection parameter.
@@ -1781,6 +1781,10 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.41` - September 25, 2025
+* GOSQL-255 exclude from revocation checking last certificate in chain if self-signed
+* GOSQL-256 token mode
 
 `20.0.0.40` - September 5, 2025
 * GOSQL-243 panic recovery with stack traces for top-level APIs
