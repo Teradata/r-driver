@@ -1818,6 +1818,11 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.46` - November 12, 2025
+* GOSQL-273 allow host=-none in token mode
+* GOSQL-277 escape function teradata_web_service
+* GOSQL-279 teradata_write_csv support for FastExport No Spool mode
+
 `20.0.0.44` - October 13, 2025
 * Build DLL and shared library with Go 1.25.2
 
