@@ -49,6 +49,7 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [FastLoad](#FastLoad)
 * [FastExport](#FastExport)
 * [CSV Batch Inserts](#CSVBatchInserts)
+* [Parquet Batch Inserts](#ParquetBatchInserts)
 * [CSV Export Results](#CSVExportResults)
 * [Change Log](#ChangeLog)
 
@@ -81,7 +82,7 @@ At the present time, the driver offers the following features.
 * Parameterized batch SQL requests with multiple rows of data bound to question-mark parameter markers.
 * Auto-Generated Key Retrieval (AGKR) for identity column values and more.
 * Large Object (LOB) support for the BLOB and CLOB data types.
-* Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, and `DATASET STORAGE FORMAT CSV`.
+* Complex data types such as `XML`, `JSON`, `DATASET STORAGE FORMAT AVRO`, `DATASET STORAGE FORMAT CSV`, and `DATASET STORAGE FORMAT PARQUET`.
 * ElicitFile protocol support for DDL commands that create external UDFs or stored procedures and upload a file from client to database.
 * `CREATE PROCEDURE` and `REPLACE PROCEDURE` commands.
 * Stored Procedure Dynamic Result Sets.
@@ -139,6 +140,7 @@ The sample programs are coded with a fake database hostname `whomooz`, username 
 Program                                                                                             | Purpose
 --------------------------------------------------------------------------------------------------- | ---
 [batchinsertcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertcsv.R)       | Demonstrates how to insert a batch of rows from a CSV file
+[batchinsertparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertparquet.R) | Demonstrates how to insert a batch of rows from a Parquet file
 [charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)             | Demonstrates the database's *Character Export Width* behavior
 [commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)       | Demonstrates dbBegin, dbCommit, and dbRollback methods
 [exportcsvresult.R](https://github.com/Teradata/r-driver/blob/master/samples/exportcsvresult.R)     | Demonstrates how to export a query result set to a CSV file
@@ -150,6 +152,7 @@ Program                                                                         
 [fastexporttable.R](https://github.com/Teradata/r-driver/blob/master/samples/fastexporttable.R)     | Demonstrates how to FastExport rows from a table
 [fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)         | Demonstrates how to FastLoad batches of rows
 [fastloadcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadcsv.R)             | Demonstrates how to FastLoad batches of rows from a CSV file
+[fastloadparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadparquet.R)     | Demonstrates how to FastLoad batches of rows from a Parquet file
 [fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                   | Demonstrates fetching results from a multi-statement request
 [fetchperftest.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchperftest.R)         | Measures time to fetch rows from a large result set
 [fetchsp.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchsp.R)                     | Demonstrates fetching results from a stored procedure
@@ -1623,6 +1626,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request. Takes precedence over the `sip_support` connection parameter.
 `{fn teradata_read_csv(`*CSVFileName*`)}`              | Executes a batch insert using the bind parameter values read from the specified CSV file for either a SQL batch insert or a FastLoad
+`{fn teradata_read_parquet(`*ParquetFileName*`)}`      | Executes a batch insert using the bind parameter values read from the specified Parquet file for either a SQL batch insert or a FastLoad
 `{fn teradata_request_timeout(`*Seconds*`)}`           | Specifies the timeout for executing the SQL request. Zero means no timeout. Takes precedence over the `request_timeout` connection parameter.
 `{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
 `{fn teradata_require_fastload}`                       | Specifies that FastLoad is required for the SQL request
@@ -1772,6 +1776,31 @@ Limitations when using CSV batch inserts:
 * For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned. Each parser error will include the line number (starting at line 1) and the column number (starting at zero).
 * Using a CSV file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
 
+<a id="ParquetBatchInserts"></a>
+
+### Parquet Batch Inserts
+
+The driver can read batch insert bind values from a Parquet file. This feature can be used with SQL batch inserts and with FastLoad.
+
+To specify batch insert bind values in a Parquet file, the application prepends the escape function `{fn teradata_read_parquet(`*ParquetFileName*`)}` to the `INSERT` statement.
+
+The application can specify batch insert bind values in a Parquet file, or specify bind parameter values, but not both together. The driver returns an error if both are specified together.
+
+Considerations when using a Parquet file:
+* The Parquet file must conform to the Apache Parquet specification.
+* The driver reads all row groups sequentially from the Parquet file.
+* Parquet files can be compressed (SNAPPY, GZIP, ZSTD, etc.) and the driver handles decompression automatically.
+* A field value of NULL in the Parquet file is treated as a SQL NULL value.
+* A string field length greater than 64KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. 
+* A binary field length greater than 64KB is transmitted to the database as a `DEFERRED BLOB` for a SQL batch insert.
+* A field length greater than 64KB is not supported with FastLoad.
+
+Limitations when using Parquet batch inserts:
+* Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_parquet(`*ParquetFileName*`)}`.
+* The Parquet file must contain at least one valid record.
+* For FastLoad, the insert operation will fail if the Parquet file is improperly formatted and a parser error occurs.
+* Using a Parquet file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
+
 <a id="CSVExportResults"></a>
 
 ### CSV Export Results
@@ -1827,6 +1856,9 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.55` - April 3, 2026
+* GOSQL-225 escape function teradata_read_parquet
 
 `20.0.0.54` - March 19, 2026
 * GOSQL-340 escape function teradata_go_distribution
