@@ -1864,6 +1864,9 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.59` - May 20, 2026
+* GOSQL-387 Switch to Go 1.26.3
+
 `20.0.0.58` - May 6, 2026
 * GOSQL-379 obtain locale from GetUserDefaultLocaleName on Windows
 * GOSQL-380 connection parameter jws_audience
