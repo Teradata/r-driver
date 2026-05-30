@@ -50,6 +50,7 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [FastExport](#FastExport)
 * [CSV Batch Inserts](#CSVBatchInserts)
 * [Parquet Batch Inserts](#ParquetBatchInserts)
+* [JSON Batch Inserts](#JSONBatchInserts)
 * [CSV Export Results](#CSVExportResults)
 * [Change Log](#ChangeLog)
 
@@ -137,37 +138,39 @@ Sample programs are provided to demonstrate how to use the driver. When the driv
 
 The sample programs are coded with a fake database hostname `whomooz`, username `guest`, and password `please`. Substitute your actual database hostname and credentials before running a sample program.
 
-Program                                                                                             | Purpose
---------------------------------------------------------------------------------------------------- | ---
-[batchinsertcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertcsv.R)       | Demonstrates how to insert a batch of rows from a CSV file
-[batchinsertparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertparquet.R) | Demonstrates how to insert a batch of rows from a Parquet file
-[charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)             | Demonstrates the database's *Character Export Width* behavior
-[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)       | Demonstrates dbBegin, dbCommit, and dbRollback methods
-[exportcsvresult.R](https://github.com/Teradata/r-driver/blob/master/samples/exportcsvresult.R)     | Demonstrates how to export a query result set to a CSV file
-[exportcsvresults.R](https://github.com/Teradata/r-driver/blob/master/samples/exportcsvresults.R)   | Demonstrates how to export multiple query result sets to CSV files
+Program                                                                                                   | Purpose
+--------------------------------------------------------------------------------------------------------- | ---
+[batchinsertcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertcsv.R)             | Demonstrates how to insert a batch of rows from a CSV file
+[batchinsertjson.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertjson.R)           | Demonstrates how to insert a batch of rows from a JSON file
+[batchinsertparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertparquet.R)     | Demonstrates how to insert a batch of rows from a Parquet file
+[charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)                   | Demonstrates the database's *Character Export Width* behavior
+[commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)             | Demonstrates dbBegin, dbCommit, and dbRollback methods
+[exportcsvresult.R](https://github.com/Teradata/r-driver/blob/master/samples/exportcsvresult.R)           | Demonstrates how to export a query result set to a CSV file
+[exportcsvresults.R](https://github.com/Teradata/r-driver/blob/master/samples/exportcsvresults.R)         | Demonstrates how to export multiple query result sets to CSV files
 [fakeexportcsvresults.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeexportcsvresults.R) | Demonstrates how to export multiple query result sets with the metadata to CSV files
-[fakeresultsetcon.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetcon.R)   | Demonstrates connection parameter for fake result sets
-[fakeresultsetesc.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetesc.R)   | Demonstrates escape function for fake result sets
-[fastexportcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/fastexportcsv.R)         | Demonstrates how to FastExport rows from a table to a CSV file
-[fastexporttable.R](https://github.com/Teradata/r-driver/blob/master/samples/fastexporttable.R)     | Demonstrates how to FastExport rows from a table
-[fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)         | Demonstrates how to FastLoad batches of rows
-[fastloadcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadcsv.R)             | Demonstrates how to FastLoad batches of rows from a CSV file
-[fastloadparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadparquet.R)     | Demonstrates how to FastLoad batches of rows from a Parquet file
-[fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                   | Demonstrates fetching results from a multi-statement request
-[fetchperftest.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchperftest.R)         | Measures time to fetch rows from a large result set
-[fetchsp.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchsp.R)                     | Demonstrates fetching results from a stored procedure
-[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)               | Demonstrates how to insert R Date values into a temporary table
-[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)       | Demonstrates how to insert R difftime values into a temporary table
-[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)                 | Demonstrates how to insert R hms values into a temporary table
-[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)         | Demonstrates how to insert R integer values into a temporary table
-[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)         | Demonstrates how to insert R numeric values into a temporary table
-[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)         | Demonstrates how to insert R POSIXct values into a temporary table
-[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)         | Demonstrates how to insert R POSIXlt values into a temporary table
-[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)                 | Demonstrates how to insert R raw values into a temporary table
-[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)               | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
-[insertxml.R](https://github.com/Teradata/r-driver/blob/master/samples/insertxml.R)                 | Demonstrates how to insert and retrieve XML values
-[nativesql.R](https://github.com/Teradata/r-driver/blob/master/samples/nativesql.R)                 | Demonstrates escape functions to obtain information about the connection
-[TJEncryptPassword.R](https://github.com/Teradata/r-driver/blob/master/samples/TJEncryptPassword.R) | Creates encrypted password files
+[fakeresultsetcon.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetcon.R)         | Demonstrates connection parameter for fake result sets
+[fakeresultsetesc.R](https://github.com/Teradata/r-driver/blob/master/samples/fakeresultsetesc.R)         | Demonstrates escape function for fake result sets
+[fastexportcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/fastexportcsv.R)               | Demonstrates how to FastExport rows from a table to a CSV file
+[fastexporttable.R](https://github.com/Teradata/r-driver/blob/master/samples/fastexporttable.R)           | Demonstrates how to FastExport rows from a table
+[fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)               | Demonstrates how to FastLoad batches of rows
+[fastloadcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadcsv.R)                   | Demonstrates how to FastLoad batches of rows from a CSV file
+[fastloadjson.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadjson.R)                 | Demonstrates how to FastLoad batches of rows from a JSON file
+[fastloadparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadparquet.R)           | Demonstrates how to FastLoad batches of rows from a Parquet file
+[fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                         | Demonstrates fetching results from a multi-statement request
+[fetchperftest.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchperftest.R)               | Measures time to fetch rows from a large result set
+[fetchsp.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchsp.R)                           | Demonstrates fetching results from a stored procedure
+[insertdate.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdate.R)                     | Demonstrates how to insert R Date values into a temporary table
+[insertdifftime.R](https://github.com/Teradata/r-driver/blob/master/samples/insertdifftime.R)             | Demonstrates how to insert R difftime values into a temporary table
+[inserthms.R](https://github.com/Teradata/r-driver/blob/master/samples/inserthms.R)                       | Demonstrates how to insert R hms values into a temporary table
+[insertinteger.R](https://github.com/Teradata/r-driver/blob/master/samples/insertinteger.R)               | Demonstrates how to insert R integer values into a temporary table
+[insertnumeric.R](https://github.com/Teradata/r-driver/blob/master/samples/insertnumeric.R)               | Demonstrates how to insert R numeric values into a temporary table
+[insertposixct.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixct.R)               | Demonstrates how to insert R POSIXct values into a temporary table
+[insertposixlt.R](https://github.com/Teradata/r-driver/blob/master/samples/insertposixlt.R)               | Demonstrates how to insert R POSIXlt values into a temporary table
+[insertraw.R](https://github.com/Teradata/r-driver/blob/master/samples/insertraw.R)                       | Demonstrates how to insert R raw values into a temporary table
+[inserttime.R](https://github.com/Teradata/r-driver/blob/master/samples/inserttime.R)                     | Demonstrates how to insert teradatasql TimeWithTimeZone, Timestamp, and TimestampWithTimeZone values into a temporary table
+[insertxml.R](https://github.com/Teradata/r-driver/blob/master/samples/insertxml.R)                       | Demonstrates how to insert and retrieve XML values
+[nativesql.R](https://github.com/Teradata/r-driver/blob/master/samples/nativesql.R)                       | Demonstrates escape functions to obtain information about the connection
+[TJEncryptPassword.R](https://github.com/Teradata/r-driver/blob/master/samples/TJEncryptPassword.R)       | Creates encrypted password files
 
 <a id="Using"></a>
 
@@ -1627,6 +1630,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_provide(request_scope_refresh_rsmd)}`    | Executes the SQL request with the default request processing option `B` (both)
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request. Takes precedence over the `sip_support` connection parameter.
 `{fn teradata_read_csv(`*CSVFileName*`)}`              | Executes a batch insert using the bind parameter values read from the specified CSV file for either a SQL batch insert or a FastLoad
+`{fn teradata_read_json(`*JSONFileName*`)}`            | Executes a batch insert using the bind parameter values read from the specified JSON file for either a SQL batch insert or a FastLoad
 `{fn teradata_read_parquet(`*ParquetFileName*`)}`      | Executes a batch insert using the bind parameter values read from the specified Parquet file for either a SQL batch insert or a FastLoad
 `{fn teradata_request_timeout(`*Seconds*`)}`           | Specifies the timeout for executing the SQL request. Zero means no timeout. Takes precedence over the `request_timeout` connection parameter.
 `{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
@@ -1795,7 +1799,7 @@ Considerations when using a Parquet file:
 * The driver reads all row groups sequentially from the Parquet file.
 * Parquet files can be compressed (SNAPPY, GZIP, ZSTD, etc.) and the driver handles decompression automatically.
 * A field value of NULL in the Parquet file is treated as a SQL NULL value.
-* A string field length greater than 64KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. 
+* A string field length greater than 64KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert.
 * A binary field length greater than 64KB is transmitted to the database as a `DEFERRED BLOB` for a SQL batch insert.
 * A field length greater than 64KB is not supported with FastLoad.
 * The driver treats a Parquet input file similarly to a CSV input file. Parquet file column names are ignored. No mapping is done from Parquet file column names to destination table column names.
@@ -1807,6 +1811,37 @@ Limitations when using Parquet batch inserts:
 * The Parquet file must contain at least one valid record.
 * For FastLoad, the insert operation will fail if the Parquet file is improperly formatted and a parser error occurs.
 * Using a Parquet file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
+
+<a id="JSONBatchInserts"></a>
+
+### JSON Batch Inserts
+
+The driver can read batch insert bind values from a JSON file. This feature can be used with SQL batch inserts and with FastLoad.
+
+To specify batch insert bind values in a JSON file, the application prepends the escape function `{fn teradata_read_json(`*JSONFileName*`)}` to the `INSERT` statement.
+
+The application can specify batch insert bind values in a JSON file, or specify bind parameter values, but not both together. The driver returns an error if both are specified together.
+
+Considerations when using a JSON file:
+* The JSON file must contain a JSON array of objects at the top level.
+* Each element of the array is a JSON object representing one row to be inserted.
+* For each parameter marker in the `INSERT` statement, the driver looks up the corresponding value in the JSON object by the destination column name. Every parameter marker must have a matching key in the JSON object.
+* JSON object keys may appear in any order. The driver uses the column name from the `INSERT` statement to locate the corresponding value in each JSON object.
+* Extra keys in a JSON object that do not correspond to any parameter marker are silently ignored.
+* A JSON `null` value is treated as a SQL `NULL` value.
+* The driver recursively flattens nested JSON objects, promoting each nested key to the top level so it can be matched to a parameter marker by name. A nested object or array is also available as the string representation of its enclosing parent object. This allows the same data to be inserted into multiple columns at different levels of granularity. For example, given `{"c1": {"c2": 1}}`, the `c1` parameter marker receives the JSON string `{"c2": 1}` and the `c2` parameter marker receives the scalar value `1`.
+* A JSON array of floats, such as a vector embedding `[0.123, 0.456, ...]`, is transmitted to the database as its `VARCHAR` string representation, which the database can automatically convert to a `VECTOR` column value using its built-in To-SQL transform.
+* The driver reads all rows from the JSON file in a single batch.
+* A string field length greater than 32KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. A field length greater than 32KB is not supported with FastLoad.
+
+Limitations when using JSON batch inserts:
+* Not all data types are supported. For example, `BLOB` and `BYTE` are not supported.
+* Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_json(`*JSONFileName*`)}`.
+* Duplicate JSON keys, including keys from different nesting levels that collide after flattening, cause the driver to return an error.
+* The JSON file must contain at least one valid record in the top-level array.
+* For FastLoad, the insert operation will fail if the JSON file is improperly formatted and a parser error occurs.
+* For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned.
+* Using a JSON file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
 
 <a id="CSVExportResults"></a>
 
@@ -1863,6 +1898,10 @@ Limitations when exporting to CSV files:
 <a id="ChangeLog"></a>
 
 ### Change Log
+
+`20.0.0.60` - May 29, 2026
+* GOSQL-357 escape function teradata_read_json
+* GOSQL-393 Switch to golang.org/x/crypto v0.52.0
 
 `20.0.0.59` - May 20, 2026
 * GOSQL-387 Switch to Go 1.26.3
