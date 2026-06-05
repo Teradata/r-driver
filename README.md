@@ -1899,6 +1899,10 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.61` - June 4, 2026
+* GOSQL-389 Replace Apache Arrow with parquet-go/parquet-go
+* GOSQL-399 Switch to Go 1.26.4
+
 `20.0.0.60` - May 29, 2026
 * GOSQL-357 escape function teradata_read_json
 * GOSQL-393 Switch to golang.org/x/crypto v0.52.0
