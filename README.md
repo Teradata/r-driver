@@ -51,6 +51,7 @@ Copyright 2026 Teradata. All Rights Reserved.
 * [CSV Batch Inserts](#CSVBatchInserts)
 * [Parquet Batch Inserts](#ParquetBatchInserts)
 * [JSON Batch Inserts](#JSONBatchInserts)
+* [JSONL Batch Inserts](#JSONLBatchInserts)
 * [CSV Export Results](#CSVExportResults)
 * [Change Log](#ChangeLog)
 
@@ -142,6 +143,7 @@ Program                                                                         
 --------------------------------------------------------------------------------------------------------- | ---
 [batchinsertcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertcsv.R)             | Demonstrates how to insert a batch of rows from a CSV file
 [batchinsertjson.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertjson.R)           | Demonstrates how to insert a batch of rows from a JSON file
+[batchinsertjsonl.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertjsonl.R)         | Demonstrates how to insert a batch of rows from a JSONL file
 [batchinsertparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/batchinsertparquet.R)     | Demonstrates how to insert a batch of rows from a Parquet file
 [charpadding.R](https://github.com/Teradata/r-driver/blob/master/samples/charpadding.R)                   | Demonstrates the database's *Character Export Width* behavior
 [commitrollback.R](https://github.com/Teradata/r-driver/blob/master/samples/commitrollback.R)             | Demonstrates dbBegin, dbCommit, and dbRollback methods
@@ -155,6 +157,7 @@ Program                                                                         
 [fastloadbatch.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadbatch.R)               | Demonstrates how to FastLoad batches of rows
 [fastloadcsv.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadcsv.R)                   | Demonstrates how to FastLoad batches of rows from a CSV file
 [fastloadjson.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadjson.R)                 | Demonstrates how to FastLoad batches of rows from a JSON file
+[fastloadjsonl.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadjsonl.R)               | Demonstrates how to FastLoad batches of rows from a JSONL file
 [fastloadparquet.R](https://github.com/Teradata/r-driver/blob/master/samples/fastloadparquet.R)           | Demonstrates how to FastLoad batches of rows from a Parquet file
 [fetchmsr.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchmsr.R)                         | Demonstrates fetching results from a multi-statement request
 [fetchperftest.R](https://github.com/Teradata/r-driver/blob/master/samples/fetchperftest.R)               | Measures time to fetch rows from a large result set
@@ -1631,6 +1634,7 @@ Request-Scope Function                                 | Effect
 `{fn teradata_provide(request_scope_sip_support_off)}` | Turns off StatementInfo parcel support for this SQL request. Takes precedence over the `sip_support` connection parameter.
 `{fn teradata_read_csv(`*CSVFileName*`)}`              | Executes a batch insert using the bind parameter values read from the specified CSV file for either a SQL batch insert or a FastLoad
 `{fn teradata_read_json(`*JSONFileName*`)}`            | Executes a batch insert using the bind parameter values read from the specified JSON file for either a SQL batch insert or a FastLoad
+`{fn teradata_read_jsonl(`*JSONLFileName*`)}`          | Executes a batch insert using the bind parameter values read from the specified JSONL file for either a SQL batch insert or a FastLoad
 `{fn teradata_read_parquet(`*ParquetFileName*`)}`      | Executes a batch insert using the bind parameter values read from the specified Parquet file for either a SQL batch insert or a FastLoad
 `{fn teradata_request_timeout(`*Seconds*`)}`           | Specifies the timeout for executing the SQL request. Zero means no timeout. Takes precedence over the `request_timeout` connection parameter.
 `{fn teradata_require_fastexport}`                     | Specifies that FastExport is required for the SQL request
@@ -1826,7 +1830,7 @@ Considerations when using a JSON file:
 * The JSON file must contain a JSON array of objects at the top level.
 * Each element of the array is a JSON object representing one row to be inserted.
 * For each parameter marker in the `INSERT` statement, the driver looks up the corresponding value in the JSON object by the destination column name. Every parameter marker must have a matching key in the JSON object.
-* JSON object keys may appear in any order. The driver uses the column name from the `INSERT` statement to locate the corresponding value in each JSON object.
+* JSON object keys may appear in any order. The driver uses the column name from the `INSERT` statement to locate the corresponding value in each JSON object. Key name matching is case-sensitive.
 * Extra keys in a JSON object that do not correspond to any parameter marker are silently ignored.
 * A JSON `null` value is treated as a SQL `NULL` value.
 * The driver recursively flattens nested JSON objects, promoting each nested key to the top level so it can be matched to a parameter marker by name. A nested object or array is also available as the string representation of its enclosing parent object. This allows the same data to be inserted into multiple columns at different levels of granularity. For example, given `{"c1": {"c2": 1}}`, the `c1` parameter marker receives the JSON string `{"c2": 1}` and the `c2` parameter marker receives the scalar value `1`.
@@ -1842,6 +1846,37 @@ Limitations when using JSON batch inserts:
 * For FastLoad, the insert operation will fail if the JSON file is improperly formatted and a parser error occurs.
 * For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned.
 * Using a JSON file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
+
+<a id="JSONLBatchInserts"></a>
+
+### JSONL Batch Inserts
+
+The driver can read batch insert bind values from a JSONL (JSON Lines) file. This feature can be used with SQL batch inserts and with FastLoad.
+
+To specify batch insert bind values in a JSONL file, the application prepends the escape function `{fn teradata_read_jsonl(`*JSONLFileName*`)}` to the `INSERT` statement.
+
+Each line of a JSONL file is a self-contained JSON object `{...}`. Lines that are empty or contain only whitespace are skipped. The file does not have a header line.
+
+The application can specify batch insert bind values in a JSONL file, or specify bind parameter values, but not both together. The driver returns an error if both are specified together.
+
+Considerations when using a JSONL file:
+* Each non-empty line of the JSONL file must be a valid JSON object `{...}`.
+* For each parameter marker in the `INSERT` statement, the driver looks up the corresponding value in the JSON object by the destination column name. Every parameter marker must have a matching key in the JSON object.
+* JSON object keys may appear in any order within each record. Key name matching is case-sensitive.
+* Extra keys in a JSON object that do not correspond to any parameter marker are silently ignored.
+* A JSON `null` value is treated as a SQL `NULL` value.
+* The driver recursively flattens nested JSON objects, promoting each nested key to the top level so it can be matched to a parameter marker by name. A nested object or array is also available as the string representation of its enclosing parent object. This allows the same data to be inserted into multiple columns at different levels of granularity. For example, given `{"address": {"city": "Dallas"}}`, the `address` parameter marker receives the JSON string `{"city": "Dallas"}` and the `city` parameter marker receives the scalar value `"Dallas"`.
+* A JSON array of floats, such as a vector embedding `[0.123, 0.456, ...]`, is transmitted to the database as its `VARCHAR` string representation, which the database can automatically convert to a `VECTOR` column value using its built-in To-SQL transform.
+* A string field length greater than 32KB is transmitted to the database as a `DEFERRED CLOB` for a SQL batch insert. A field length greater than 32KB is not supported with FastLoad.
+
+Limitations when using JSONL batch inserts:
+* Not all data types are supported. For example, `BLOB` and `BYTE` are not supported.
+* Bound parameter values cannot be specified in the execute method when using the escape function `{fn teradata_read_jsonl(`*JSONLFileName*`)}`.
+* Duplicate JSON keys, including keys from different nesting levels that collide after flattening, cause the driver to return an error.
+* The JSONL file must contain at least one valid record.
+* For FastLoad, the insert operation will fail if a record is improperly formatted and a parser error occurs.
+* For SQL batch insert, some records may be inserted before a parsing error occurs. A list of the parser errors will be returned.
+* Using a JSONL file with FastLoad has the same limitations and is used the same way as described in the [FastLoad](#FastLoad) section.
 
 <a id="CSVExportResults"></a>
 
@@ -1899,7 +1934,14 @@ Limitations when exporting to CSV files:
 
 ### Change Log
 
+`20.0.0.62` - June 24, 2026
+* GOSQL-337 escape function teradata_read_jsonl
+* GOSQL-401 Update third party license files for parquet-go and dependencies
+* GOSQL-403 more accurate severity keyword for Go TeraGSS error messages
+* GOSQL-405 Improve error message for logmech=JWT when logdata is missing token= prefix
+
 `20.0.0.61` - June 4, 2026
+* GOSQL-371 reduce size of Parquet reader library
 * GOSQL-389 Replace Apache Arrow with parquet-go/parquet-go
 * GOSQL-399 Switch to Go 1.26.4
 
