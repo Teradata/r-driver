@@ -2018,6 +2018,9 @@ Limitations when exporting to Parquet files:
 
 ### Change Log
 
+`20.0.0.68` - September 1, 2026
+* GOSQL-465 accommodate missing issuers in certificate revocation checking
+
 `20.0.0.67` - August 28, 2026
 * GOSQL-385 escape function teradata_write_parquet
 * GOSQL-413 new connection parameter value sslcrc=DISABLE
